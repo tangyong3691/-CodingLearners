@@ -1,0 +1,9 @@
+TestModule DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+	TestRequest ::= SEQUENCE {
+		header-only  BOOLEAN,
+		lock         BOOLEAN,
+		url          Url,
+		timestamp    GeneralizedTime
+	}
+	Url ::= VisibleString (FROM("a".."z"|"A".."Z"|"0".."9"|"./-_~%#"))
+END

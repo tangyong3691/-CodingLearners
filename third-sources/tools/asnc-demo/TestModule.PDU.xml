@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestRequest>
+  <header-only><true/></header-only>
+  <lock><false/></lock>
+  <url>www.asnlab.org</url>
+  <timestamp>20121221121221Z</timestamp>
+</TestRequest>

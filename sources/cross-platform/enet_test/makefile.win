@@ -1,0 +1,4 @@
+all:
+	gcc -o enet_test enet_test.c -D_WIN32 -lenet -lws2_32 -lwinmm -lpsapi -liphlpapi -L./ -I./include
+clean:
+	rm -f enet_test.exe

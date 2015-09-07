@@ -1,0 +1,16 @@
+1. 此例子基于asn1c方案
+2. 下载:
+    https://github.com/vlm/asn1c
+3. asn文档生成c源代码
+   asn1c -EF TestModule.asn
+   asn1c -gen-PER TestModule.asn
+   修改Makefile.am.sample,如下:
+     CFLAGS += -I. -DPDU=TestRequest
+   生成例子程序
+4. 测试
+   ./progname -ixer TestModule.PDU.xml
+   ./progname -iper TestModule.PDU.uper
+   ./progname -iber TestModule.PDU.ber 
+5. 生成asn数据源的网站:
+   http://asn1-playground.oss.com/
+

@@ -1,0 +1,10 @@
+readme about tcpclient
+----------------------
+it is tcp client test tool of linux.
+It is licenced under GPLv3 or newer.
+------------------------------
+
+bulid
+------
+make clean
+make
