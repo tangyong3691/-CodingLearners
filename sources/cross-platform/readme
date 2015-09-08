@@ -1,0 +1,14 @@
+1. all java projects in this path is utf-8, when you use it in some systems (windows) that default isn't utf-8, you should solve it first. below is some advise:
+  (1) use translate code in linux, like:
+      iconv -f utf-8 -t gb2312 /origin/MySome.java > /dest/MySome.java
+  (2) or, set build tools support utf-8, like:
+     eclipse, open menu "Windows / Preferences", open navigate item "General / Workspace", change file encoding "Other: UTF-8", and change file line dlimiter "Other: Unix"
+
+
+-----------chinese(中文)----------------
+1.此目录下的所有java方案均采用utf-8编码，当你在默认不是此编码的系统时(比如：windows系统),请先解决此编码格式的支持，建议如下:
+  (1) 在linux系统使用iconv转换编码:
+    iconv -f utf-8 -t gb2312 /origin/MySome.java > /dest/MySome.java
+  (2) 设定开发工具支持utf-8:
+    eclipse中设定，打开菜单 "Windows / Preferences", 在菜单左侧栏目选 "General /  Workspace", 重设定文件编码 "Other: UTF-8", 重设定行分割符 "Other: Unix"
+
