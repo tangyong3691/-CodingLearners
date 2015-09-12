@@ -42,23 +42,57 @@ bool get_data (int *fd, char *buffer, int size)
   return size == 0;
 }
 
+bool isdict(char *dict, int length, char c)
+{
+  int ii;
+  for(ii = 0; ii < length; ii++)
+    if(dict[ii] == c) return true;
+  return false;
+}
+
 int main(int argc, char *argv[])
 {
   char randpoll[27];
   char dict[36];
   int cnt = 0;
   int fd;
+  int ii;
   if(!open_dev_random(&fd))
   {
         printf("failed\n");
         exit(1);
   }
   printf("start get random number.\nwhen it blocks here, please do another thing by mouse or keyboard, then you should get result.\n");
-  if(!get_data(randpoll, 27))
+  if(!get_data(dict, 36))
   {
     printf("failed, you can rerun it later.\n");
+    close(fd);
     exit(1);
+  }
+ 
+  for(ii = 0; ii < 36; ii++)
+  {
+     dict[ii] = dict[ii] % 36;
+     if(!isdict(dict, cnt, dict[ii]))
+     {
+        dict[cnt++] = dict[ii];
+     }
+  }
+  while(cnt < 36)
+  {
+     char c;
+     if(!get_data(&c, 1))
+     {
+        printf("failed, you can rerun it later.\n");
+        close(fd);
+        exit(1);
+     }
+    if(!isdict(dict, cnt, c)) dict[cnt++] = c;
   }
   
   close(fd);
+  printf("success:\n");
+  for(ii = 0; ii < 36; ii++)
+    printf("%c ", dict[ii] + '0');
+  printf("\n");
 }
