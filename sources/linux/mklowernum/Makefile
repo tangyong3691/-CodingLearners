@@ -5,7 +5,7 @@ RELTARGET = $(TARGET)
 COMPILE.c = $(CC)  $(C_FLAGS) $(CPP_FLAGS) -I$(THIRDPARTY_DIR)/include   -MD -MP -c
 LD_FLAGS += -O2  -o 
 LINK.c = $(CC) $(LD_FLAGS)
-RELLDFLAGS += -L./lib -L$(TOP_DIR)/lib -luuid
+RELLDFLAGS += -L./lib -L$(TOP_DIR)/lib 
 SOURCES = $(wildcard *.c)
 HEADERS = $(wildcard *.h)
 RELOBJFILES = $(SOURCES:%.c=%.o)

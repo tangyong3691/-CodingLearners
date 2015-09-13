@@ -9,26 +9,45 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <limits.h>
+
+#ifndef bool
+#define bool int
+#endif
+
+#ifndef true
+#define true 1
+#endif
+
+#ifndef false
+#define false 0
+#endif
 
 bool open_dev_random(int *fd)
 {
     if(fd == 0) return false;
     *fd = open ("/dev/random", O_RDONLY);
-    return (rd > 0);
+    return (*fd > 0);
 }
 
-bool get_data (int *fd, char *buffer, int size)
+bool get_data (int *fd, unsigned char *buffer, int size)
 {
-  // int fd; 
+  // int fd;
   if(buffer == 0 || size <= 0 || size > SSIZE_MAX) return false;
   //fd = open ("/dev/random", O_RDONLY);
-  
+
   //if (fd > 0)
   {
     int rd;
@@ -42,7 +61,7 @@ bool get_data (int *fd, char *buffer, int size)
   return size == 0;
 }
 
-bool isdict(char *dict, int length, char c)
+bool isdict(unsigned char *dict, int length, unsigned char c)
 {
   int ii;
   for(ii = 0; ii < length; ii++)
@@ -52,8 +71,8 @@ bool isdict(char *dict, int length, char c)
 
 int main(int argc, char *argv[])
 {
-  char randpoll[27];
-  char dict[36];
+  //char randpoll[27];
+  unsigned char dict[36];
   int cnt = 0;
   int fd;
   int ii;
@@ -63,13 +82,13 @@ int main(int argc, char *argv[])
         exit(1);
   }
   printf("start get random number.\nwhen it blocks here, please do another thing by mouse or keyboard, then you should get result.\n");
-  if(!get_data(dict, 36))
+  if(!get_data(&fd, dict, 36))
   {
     printf("failed, you can rerun it later.\n");
     close(fd);
     exit(1);
   }
- 
+
   for(ii = 0; ii < 36; ii++)
   {
      dict[ii] = dict[ii] % 36;
@@ -80,19 +99,21 @@ int main(int argc, char *argv[])
   }
   while(cnt < 36)
   {
-     char c;
-     if(!get_data(&c, 1))
+     unsigned char c;
+     if(!get_data(&fd, &c, 1))
      {
         printf("failed, you can rerun it later.\n");
         close(fd);
         exit(1);
      }
+     c = c % 36;
     if(!isdict(dict, cnt, c)) dict[cnt++] = c;
   }
-  
+
   close(fd);
   printf("success:\n");
   for(ii = 0; ii < 36; ii++)
-    printf("%c ", dict[ii] + '0');
+    printf("%2d ", (unsigned)dict[ii]);
   printf("\n");
+  return 0;
 }
