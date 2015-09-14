@@ -1,4 +1,7 @@
 # -CodingLearners
   This is the basis for personal code learning and accumulation, focused on C\C++\Java language development based on Linux systems and cross-platform development. If you are a beginner, welcome to give some suggestions or join us; if you're intermediate level developer, welcome to help us.
-  The code in this project in accordance with the GPL release, some reference code and modify, in accordance with the original open source license.
+  The code in this project is licenced under GPLv3, some reference code and modify, in accordance with the original open source license.
 
+# -CodingLearners(chinese,utf8)
+  此项目是个人编码学习及积累，有感于很多学习者包括我自己在黑暗中摸索，如果能将此过程产生的部分源码作为体会和心得加以记录和整理，对后来者有些帮助，则助人助己。主要方向是基于linux系统的C、C++、Java语言开发，以及跨平台开发。欢迎初学者加入我们或提供宝贵建议，也欢迎更多的高手帮助我们。
+  为便于和促进相互学习和交流，此项目遵守GPL开源协议第3版;有部分代码是基于其他源代码的修订，此部分则遵守其原有的开源协议。为避免混淆，将不遵守GPL第3版的源码分离在顶级目录中。

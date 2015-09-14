@@ -141,7 +141,11 @@ int main(int argc, char *argv[])
 
   printf("success:\n");
   for(ii = 0; ii < 36; ii++)
-    printf("%2d ", (unsigned)dict[ii]);
+  {
+    if((ii%10) == 0) printf("\n");
+    printf("%2d  ", (unsigned)dict[ii]);
+  }
+
   printf("\n");
   return 0;
 }
