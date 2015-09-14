@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
         dict[cnt++] = dict[ii];
      }
   }
-  while(cnt < 36)
+  while(cnt < 35)
   {
      unsigned char c;
      if(!get_data(&fd, &c, 1))
@@ -111,6 +111,34 @@ int main(int argc, char *argv[])
   }
 
   close(fd);
+
+  if(cnt == 35)
+  {
+    unsigned char sortdt[36];
+    for(ii = 0; ii < 36; ii++)
+    {
+        sortdt[ii] = 0xff;
+    }
+    for(ii = 0; ii < cnt; ii++)
+    {
+        sortdt[dict[ii]] = dict[ii];
+    }
+    for(ii = 0; ii < 36; ii++)
+    {
+        if(sortdt[ii] == 0xff)
+        {
+            dict[cnt++] = ii;
+            break;
+        }
+    }
+  }
+
+  if(cnt != 36)
+  {
+    printf("failed\n");
+    exit(1);
+  }
+
   printf("success:\n");
   for(ii = 0; ii < 36; ii++)
     printf("%2d ", (unsigned)dict[ii]);
