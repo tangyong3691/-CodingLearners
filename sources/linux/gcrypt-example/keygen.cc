@@ -45,13 +45,17 @@ int main(int argc, char** argv)
 
     /* Encrypt the RSA key pair. */
     size_t rsa_len = get_keypair_size(2048);
-    void* rsa_buf = calloc(1, rsa_len);
+    size_t keypair_canon_len = gcry_sexp_sprint(rsa_keypair, GCRYSEXP_FMT_CANON, 0, 0);
+    void* rsa_buf = calloc(1, keypair_canon_len + 1 /*rsa_len*/);
     if (!rsa_buf) {
         xerr("malloc: could not allocate rsa buffer");
     }
-    size_t keypair_canon_len = gcry_sexp_sprint(rsa_keypair, GCRYSEXP_FMT_CANON, rsa_buf, rsa_len);
+    /*size_t keypair_canon_len = */gcry_sexp_sprint(rsa_keypair, GCRYSEXP_FMT_CANON, rsa_buf, keypair_canon_len /*rsa_len*/);
 
-    printf("alloc rsa key buffer:%d, cannon len:%d\n", rsa_len, keypair_canon_len);
+    printf("alloc rsa key buffer:%d, cannon len:%d, strlen:%d\n", rsa_len, keypair_canon_len, strlen((char*)rsa_buf));
+    printf("%s\n", rsa_buf);
+
+    rsa_len = keypair_canon_len;
 
     err = gcry_cipher_encrypt(aes_hd, (unsigned char*) rsa_buf,
                               rsa_len, NULL, 0);

@@ -22,3 +22,6 @@ size_t get_keypair_size(int nbits);
 
 /* Create an AES context out of a user's password. */
 void get_aes_ctx(gcry_cipher_hd_t* aes_hd);
+
+
+void write_tofile(char *filenm, void *buf, int len);

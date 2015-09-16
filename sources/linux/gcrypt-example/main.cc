@@ -24,7 +24,10 @@ int main(int argc, char** argv)
     get_aes_ctx(&aes_hd);
 
     /* Read and decrypt the key pair from disk. */
-    size_t rsa_len = get_keypair_size(2048);
+    fseek(lockf, 0, SEEK_END);
+
+    size_t rsa_len = ftell(lockf);/*get_keypair_size(2048);*/
+    fseek(lockf, 0, SEEK_SET);
     void* rsa_buf = calloc(1, rsa_len);
     if (!rsa_buf) {
         xerr("malloc: could not allocate rsa buffer");
@@ -46,6 +49,11 @@ int main(int argc, char** argv)
     gcry_sexp_t pubk = gcry_sexp_find_token(rsa_keypair, "public-key", 0);
     gcry_sexp_t privk = gcry_sexp_find_token(rsa_keypair, "private-key", 0);
 
+    int pubkey_len = gcry_sexp_sprint (pubk, GCRYSEXP_FMT_CANON, 0, 0);
+    void *pubkey_buf = malloc(pubkey_len);
+    gcry_sexp_sprint (pubk, GCRYSEXP_FMT_CANON, pubkey_buf, pubkey_len);
+    write_tofile("./pub_key_file1", pubkey_buf, pubkey_len);
+    free(pubkey_buf);
     /* Create a message. */
     gcry_mpi_t msg;
     gcry_sexp_t data;
@@ -69,6 +77,12 @@ int main(int argc, char** argv)
         xerr("gcrypt: encryption failed");
     }
 
+    int cry_data_sz = gcry_sexp_sprint (ciph, GCRYSEXP_FMT_CANON, 0, 0);
+    void *cry_data_buf = malloc(cry_data_sz);
+    gcry_sexp_sprint (ciph, GCRYSEXP_FMT_CANON, cry_data_buf, cry_data_sz);
+    gcry_sexp_t ciph2;
+    gcry_sexp_new (&ciph2, cry_data_buf, cry_data_sz, 0);
+    free(cry_data_buf);
     /*gcry_mpi_t crypt_msg = gcry_sexp_nth_mpi(ciph, 0, GCRYMPI_FMT_USG);
     printf("crypt_msg:\n");
     gcry_mpi_dump(crypt_msg);
@@ -76,7 +90,7 @@ int main(int argc, char** argv)
 
     /* Decrypt the message. */
     gcry_sexp_t plain;
-    err = gcry_pk_decrypt(&plain, ciph, privk);
+    err = gcry_pk_decrypt(&plain, ciph2, privk);
     if (err) {
         xerr("gcrypt: decryption failed");
     }
@@ -112,6 +126,7 @@ int main(int argc, char** argv)
     gcry_sexp_release(privk);
     gcry_sexp_release(data);
     gcry_sexp_release(ciph);
+    gcry_sexp_release(ciph2);
     gcry_sexp_release(plain);
     gcry_cipher_close(aes_hd);
     free(rsa_buf);
