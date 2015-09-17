@@ -72,13 +72,11 @@ int main(int argc, char** argv)
     gcry_sexp_release(rsa_pbkey);
     gcry_sexp_release(data);
     if (err) {
-        gcry_sexp_release(rsa_pbkey);
-        gcry_sexp_release(data);
         gcry_sexp_release(ciph);
         xerr("gcrypt: encryption failed");
     }
 
-    gcry_mpi_t crypted_msg = gcry_sexp_nth_mpi(ciph, 0, GCRYMPI_FMT_USG);
+    /*gcry_mpi_t crypted_msg = gcry_sexp_nth_mpi(ciph, 0, GCRYMPI_FMT_USG);
     gcry_sexp_release(ciph);
     if(!crypted_msg){
         xerr("gcrypt: convert crypted mpi failed");
@@ -89,17 +87,21 @@ int main(int argc, char** argv)
     if(!cry_data_sz){
         gcry_mpi_release(crypted_msg);
         xerr("gcrypt: mpi out failed");
+    }*/
+
+
+    int cry_data_sz = gcry_sexp_sprint (ciph, GCRYSEXP_FMT_CANON, 0, 0);
+    if(!cry_data_sz){
+        gcry_sexp_release(ciph);
+        xerr("gcrypt: encryption get canno size failed.\n");
     }
-
-
-    /*int cry_data_sz = gcry_sexp_sprint (ciph, GCRYSEXP_FMT_CANON, 0, 0);*/
     void *cry_data_buf = malloc(cry_data_sz);
-    /*gcry_sexp_sprint (ciph, GCRYSEXP_FMT_CANON, cry_data_buf, cry_data_sz);*/
-    //gcry_sexp_release(ciph);
+    int size_cnnon_dt = gcry_sexp_sprint (ciph, GCRYSEXP_FMT_CANON, cry_data_buf, cry_data_sz);
+    gcry_sexp_release(ciph);
 
-    err = gcry_mpi_print(GCRYMPI_FMT_USG, (unsigned char *)cry_data_buf, cry_data_sz, 0, crypted_msg);
-    gcry_mpi_release(crypted_msg);
-    if (err) {
+    //err = gcry_mpi_print(GCRYMPI_FMT_USG, (unsigned char *)cry_data_buf, cry_data_sz, 0, crypted_msg);
+    //gcry_mpi_release(crypted_msg);
+    if (size_cnnon_dt != cry_data_sz) {
         memset(cry_data_buf, 0, cry_data_sz);
         free(cry_data_buf);
         xerr("failed to stringify mpi");
