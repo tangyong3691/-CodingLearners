@@ -6,11 +6,12 @@ void xerr(const char* msg)
     exit(1);
 }
 
-void write_tofile(const char *filenm, void *buf, int len)
+int write_tofile(const char *filenm, void *buf, int len)
 {
      FILE * f = fopen(filenm, "w");
-     fwrite(buf, len, 1, f);
+     size_t n = fwrite(buf, len, 1, f);
      fclose(f);
+     return n == 1 ? len : 0;
 }
 
 int get_filesize(const char *filenm)
@@ -79,7 +80,8 @@ void gcrypt_init()
 
     /* Allocate a pool of 16k secure memory.  This make the secure memory
        available and also drops privileges where needed.  */
-    err |= gcry_control (GCRYCTL_INIT_SECMEM, 16384, 0);
+
+    err |= gcry_control (GCRYCTL_INIT_SECMEM, 65536, 0); //16384
 
     /* It is now okay to let Libgcrypt complain when there was/is
        a problem with the secure memory. */
@@ -99,7 +101,7 @@ void gcrypt_init()
     }
 }
 
-size_t get_keypair_size(int nbits)
+/*size_t get_keypair_size(int nbits)
 {
     size_t aes_blklen = gcry_cipher_get_algo_blklen(GCRY_CIPHER_AES128);
 
@@ -108,11 +110,11 @@ size_t get_keypair_size(int nbits)
 
     size_t rem = keypair_nbits % aes_blklen;
     return (keypair_nbits + rem) / 8;
-}
+}*/
 
 int init_crypt_aes(gcry_cipher_hd_t* aes_hd, const char *passwd)
 {
-    const size_t keylen = 16;
+    const size_t keylen = 32;
     char passwd_hash[keylen];
 
     size_t pass_len = passwd ? strlen(passwd) : 0;
@@ -121,7 +123,7 @@ int init_crypt_aes(gcry_cipher_hd_t* aes_hd, const char *passwd)
         return -1;
     }
 
-    int err = gcry_cipher_open(aes_hd, GCRY_CIPHER_AES128,
+    int err = gcry_cipher_open(aes_hd, GCRY_CIPHER_AES256,
                                GCRY_CIPHER_MODE_CFB, 0);
     if (err) {
         printf("gcrypt: failed to create aes handle");
@@ -129,7 +131,7 @@ int init_crypt_aes(gcry_cipher_hd_t* aes_hd, const char *passwd)
     }
 
     memset(passwd_hash, 0, sizeof(passwd_hash));
-    gcry_md_hash_buffer(gcry_md_map_name("MD5"),/*GCRY_MD_MD5,*/ (void*) passwd_hash,
+    gcry_md_hash_buffer(gcry_md_map_name("SHA256"),/*GCRY_MD_MD5,*/ (void*) passwd_hash,
                         (const void*) passwd, pass_len);
     /*int ii;
     printf("pass:%s\nlen:%d , md5:\n", passwd, (int)pass_len);
@@ -137,14 +139,14 @@ int init_crypt_aes(gcry_cipher_hd_t* aes_hd, const char *passwd)
     printf("\n");*/
 
     //memset(passwd_hash, 0, sizeof(passwd_hash));
-    gcry_md_hd_t h;
+    /*gcry_md_hd_t h;
     int algo = gcry_md_map_name("SHA256");
-     gcry_md_open (&h, algo, 0 /*, GCRY_MD_FLAG_HMAC 0*/);
+     gcry_md_open (&h, algo, 0 );
     gcry_md_write (h, (void *) passwd, pass_len);
       gcry_md_final (h);
       char passwd_hash256[keylen*2];
       memcpy (passwd_hash256, gcry_md_read (h, algo), gcry_md_get_algo_dlen (algo));
-      gcry_md_close (h);
+      gcry_md_close (h);*/
     /*for(ii=0; ii < 32; ii++) printf("%02x", (unsigned char)passwd_hash256[ii]);
     printf("\n");*/
 
@@ -156,7 +158,7 @@ int init_crypt_aes(gcry_cipher_hd_t* aes_hd, const char *passwd)
         return -1;
     }
 
-    err = gcry_cipher_setiv(*aes_hd, (const void*) passwd_hash, keylen);
+    err = gcry_cipher_setiv(*aes_hd, (const void*) passwd_hash, 16);
     if (err) {
         memset(passwd_hash, 0, sizeof(passwd_hash));
         gcry_cipher_close(*aes_hd);
@@ -174,9 +176,9 @@ char *get_pass_str(void)
     return (pass_len == 0) ? 0 : passwd;
 }
 
-void get_aes_ctx(gcry_cipher_hd_t* aes_hd)
+void get_aes_ctx(gcry_cipher_hd_t* aes_hd, char *psbuf)
 {
-    const size_t keylen = 16;
+    const size_t keylen = 32;
     char passwd_hash[keylen];
 
     char* passwd = getpass("Keypair Password: ");
@@ -184,40 +186,42 @@ void get_aes_ctx(gcry_cipher_hd_t* aes_hd)
     if (pass_len == 0) {
         xerr("getpass: not a valid password");
     }
-
-    int err = gcry_cipher_open(aes_hd, GCRY_CIPHER_AES128,
+    if(psbuf) strcpy(psbuf, passwd);
+    int err = gcry_cipher_open(aes_hd, GCRY_CIPHER_AES256,
                                GCRY_CIPHER_MODE_CFB, 0);
     if (err) {
         xerr("gcrypt: failed to create aes handle");
     }
 
     memset(passwd_hash, 0, sizeof(passwd_hash));
-    gcry_md_hash_buffer(gcry_md_map_name("MD5"),/*GCRY_MD_MD5,*/ (void*) passwd_hash,
+    gcry_md_hash_buffer(gcry_md_map_name("SHA256"),/*GCRY_MD_MD5,*/ (void*) passwd_hash,
                         (const void*) passwd, pass_len);
     int ii;
-    printf("pass:%s\nlen:%d , md5:\n", passwd, (int)pass_len);
-    for(ii=0; ii < 16; ii++) printf("%02x", (unsigned char)passwd_hash[ii]);
-    printf("\n");
+    //printf("sha256:\n");
+    //for(ii=0; ii < 32; ii++) printf("%02x", (unsigned char)passwd_hash[ii]);
+    //printf("\n");
 
     //memset(passwd_hash, 0, sizeof(passwd_hash));
-    gcry_md_hd_t h;
+    /*gcry_md_hd_t h;
     int algo = gcry_md_map_name("SHA256");
-     gcry_md_open (&h, algo, 0 /*, GCRY_MD_FLAG_HMAC 0*/);
+     gcry_md_open (&h, algo, 0 );
     gcry_md_write (h, (void *) passwd, pass_len);
       gcry_md_final (h);
       char passwd_hash256[keylen*2];
       memcpy (passwd_hash256, gcry_md_read (h, algo), gcry_md_get_algo_dlen (algo));
       gcry_md_close (h);
     for(ii=0; ii < 32; ii++) printf("%02x", (unsigned char)passwd_hash256[ii]);
-    printf("\n");
+    printf("\n");*/
 
     err = gcry_cipher_setkey(*aes_hd, (const void*) passwd_hash, keylen);
     if (err) {
+        gcry_cipher_close(*aes_hd);
         xerr("gcrypt: could not set cipher key");
     }
 
-    err = gcry_cipher_setiv(*aes_hd, (const void*) passwd_hash, keylen);
+    err = gcry_cipher_setiv(*aes_hd, (const void*) passwd_hash, 16);
     if (err) {
+        gcry_cipher_close(*aes_hd);
         xerr("gcrypt: could not set cipher initialization vector");
     }
 }

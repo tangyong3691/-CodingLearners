@@ -20,13 +20,13 @@ void xerr(const char* msg);
 void gcrypt_init();
 
 /* Estimate the size of the encrypted key pair. */
-size_t get_keypair_size(int nbits);
+/*size_t get_keypair_size(int nbits);*/
 
 /* Create an AES context out of a user's password. */
-void get_aes_ctx(gcry_cipher_hd_t* aes_hd);
+void get_aes_ctx(gcry_cipher_hd_t* aes_hd, char *buf);
 
 
-void write_tofile(const char *filenm, void *buf, int len);
+int write_tofile(const char *filenm, void *buf, int len);
 
 int read_fromfile(const char *filenm, void *buf, int buf_size);
 

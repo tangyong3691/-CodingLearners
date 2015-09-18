@@ -74,8 +74,10 @@ int main(int argc, char** argv)
     }
 
     /* Encrypt the message. */
-    /* Attention: test found only data size < 256bytes success,
-       when data SIZE > 256, result isn't correct, why?
+    /* Attention: test found only data size <= 256bytes success,
+       when data SIZE > 256, result isn't correct,
+       when we change from 2k to 8k rsa, limit is 1023(1024 result fail).
+        why?
     */
     gcry_sexp_t ciph;
     err = gcry_pk_encrypt(&ciph, data, rsa_pbkey);

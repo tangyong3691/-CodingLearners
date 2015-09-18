@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 
     /* Grab a key pair password and create an AES context with it. */
     gcry_cipher_hd_t aes_hd;
-    get_aes_ctx(&aes_hd);
+    get_aes_ctx(&aes_hd, 0);
 
     /* Read and decrypt the key pair from disk. */
     fseek(lockf, 0, SEEK_END);
