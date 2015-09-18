@@ -85,6 +85,10 @@ void gcrypt_init()
        a problem with the secure memory. */
     err |= gcry_control (GCRYCTL_RESUME_SECMEM_WARN);
 
+
+    //err |= gcry_control (GCRYCTL_SET_VERBOSITY, 3);
+    //err |= gcry_control (GCRYCTL_SET_DEBUG_FLAGS, 1u , 0);
+
     /* ... If required, other initialization goes here.  */
 
     /* Tell Libgcrypt that initialization has completed. */

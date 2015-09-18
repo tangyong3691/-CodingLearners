@@ -44,11 +44,17 @@ int main(int argc, char** argv)
         exit(1);
     }
 
+    //int in_block_size;
+    //char* in_block_pt;
+
     gcry_mpi_t msg;
     gcry_sexp_t data;
 
+    size_t scanned_size = 0;
+
     err = gcry_mpi_scan(&msg, GCRYMPI_FMT_USG, in_data,
-                        in_data_size, NULL);
+                        in_data_size, &scanned_size);
+    printf("scanned:%d\n", (int)scanned_size);
     memset(in_data, 0, in_data_size);
     free(in_data);
     if (err) {
@@ -59,6 +65,7 @@ int main(int argc, char** argv)
 
     err = gcry_sexp_build(&data, NULL,
                            "(data (flags raw) (value %m))", msg);
+    printf("data cnn size:%d\n",(int)gcry_sexp_sprint (data, GCRYSEXP_FMT_CANON, 0, 0));
     gcry_mpi_release(msg);
     if (err) {
         gcry_sexp_release(rsa_pbkey);
@@ -67,6 +74,9 @@ int main(int argc, char** argv)
     }
 
     /* Encrypt the message. */
+    /* Attention: test found only data size < 256bytes success,
+       when data SIZE > 256, result isn't correct, why?
+    */
     gcry_sexp_t ciph;
     err = gcry_pk_encrypt(&ciph, data, rsa_pbkey);
     gcry_sexp_release(rsa_pbkey);
@@ -101,10 +111,11 @@ int main(int argc, char** argv)
 
     //err = gcry_mpi_print(GCRYMPI_FMT_USG, (unsigned char *)cry_data_buf, cry_data_sz, 0, crypted_msg);
     //gcry_mpi_release(crypted_msg);
-    if (size_cnnon_dt != cry_data_sz) {
+    if (size_cnnon_dt != cry_data_sz && size_cnnon_dt + 1 != cry_data_sz) {
         memset(cry_data_buf, 0, cry_data_sz);
         free(cry_data_buf);
-        xerr("failed to stringify mpi");
+        printf("failed to stringify mpi, %d, %d\n", cry_data_sz, size_cnnon_dt);
+        exit(1);
     }
 
     write_tofile(finf.outputfile, cry_data_buf, cry_data_sz);
