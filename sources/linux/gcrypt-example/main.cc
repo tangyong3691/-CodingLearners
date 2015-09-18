@@ -37,6 +37,8 @@ int main(int argc, char** argv)
         xerr("fread() failed");
     }
 
+    fclose(lockf);
+
     err = gcry_cipher_decrypt(aes_hd, (unsigned char*) rsa_buf,
                               rsa_len, NULL, 0);
     if (err) {
@@ -80,6 +82,7 @@ int main(int argc, char** argv)
     int cry_data_sz = gcry_sexp_sprint (ciph, GCRYSEXP_FMT_CANON, 0, 0);
     void *cry_data_buf = malloc(cry_data_sz);
     gcry_sexp_sprint (ciph, GCRYSEXP_FMT_CANON, cry_data_buf, cry_data_sz);
+    write_tofile("./out_crypted_example", cry_data_buf, cry_data_sz);
     gcry_sexp_t ciph2;
     gcry_sexp_new (&ciph2, cry_data_buf, cry_data_sz, 0);
     free(cry_data_buf);
@@ -110,7 +113,7 @@ int main(int argc, char** argv)
     printf("Messages match.\n");
 
     unsigned char obuf[64] = { 0 };
-    err = gcry_mpi_print(GCRYMPI_FMT_USG, (unsigned char*) &obuf,
+    err = gcry_mpi_print(GCRYMPI_FMT_USG, (unsigned char*) obuf,
                          sizeof(obuf), NULL, out_msg);
     if (err) {
         xerr("failed to stringify mpi");
@@ -130,7 +133,7 @@ int main(int argc, char** argv)
     gcry_sexp_release(plain);
     gcry_cipher_close(aes_hd);
     free(rsa_buf);
-    fclose(lockf);
+
 
     return 0;
 }

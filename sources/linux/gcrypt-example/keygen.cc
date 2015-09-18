@@ -52,8 +52,8 @@ int main(int argc, char** argv)
     }
     /*size_t keypair_canon_len = */gcry_sexp_sprint(rsa_keypair, GCRYSEXP_FMT_CANON, rsa_buf, keypair_canon_len /*rsa_len*/);
 
-    printf("alloc rsa key buffer:%d, cannon len:%d, strlen:%d\n", rsa_len, keypair_canon_len, strlen((char*)rsa_buf));
-    printf("%s\n", rsa_buf);
+    printf("alloc rsa key buffer:%d, cannon len:%d\n", (int)rsa_len, (int)keypair_canon_len);
+    printf("%s\n", (char*)rsa_buf);
 
     rsa_len = keypair_canon_len;
 

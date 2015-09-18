@@ -26,15 +26,20 @@ int main(int argc, char** argv)
     //get_aes_ctx(&aes_hd);
     char* passwd = get_pass_str();
     if( (!passwd) || init_crypt_aes(&aes_hd, passwd)){
+        if(passwd){
+            memset(passwd, 0, strlen(passwd));
+        }
         printf("init aes crypt failed.\n");
         free(keybuf);
         exit(1);
     }
+    memset(passwd, 0, strlen(passwd));
 
     err = gcry_cipher_decrypt(aes_hd, (unsigned char*) keybuf,
                               keylen, NULL, 0);
 
     if (err) {
+        memset(keybuf, 0, keylen);
         free(keybuf);
         gcry_cipher_close(aes_hd);
         xerr("gcrypt: failed to decrypt key pair");
@@ -42,8 +47,10 @@ int main(int argc, char** argv)
 
     gcry_sexp_t rsa_keypair;
     err = gcry_sexp_new(&rsa_keypair, keybuf, keylen, 0);
+    memset(keybuf, 0, keylen);
     free(keybuf);
     if(err){
+        gcry_sexp_release(rsa_keypair);
         gcry_cipher_close(aes_hd);
         xerr("gcrypt: failed to parse cannon format\n");
     }
@@ -117,6 +124,7 @@ int main(int argc, char** argv)
     err = gcry_mpi_print(GCRYMPI_FMT_USG, (unsigned char*) out_buf,
                          out_size, NULL, out_msg);
     if (err) {
+        memset(out_buf, 0, out_size);
         free(out_buf);
         gcry_mpi_release(out_msg);
         gcry_cipher_close(aes_hd);
@@ -124,6 +132,7 @@ int main(int argc, char** argv)
     }
 
     write_tofile(finf.outputfile, out_buf, out_size);
+    memset(out_buf, 0, out_size);
     free(out_buf);
 
     if(out_size != get_filesize(finf.outputfile)){
@@ -140,4 +149,5 @@ int main(int argc, char** argv)
     gcry_cipher_close(aes_hd);
 
     printf("decrypt ok\n");
+    return 0;
 }
