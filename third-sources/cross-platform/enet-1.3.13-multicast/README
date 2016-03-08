@@ -16,4 +16,5 @@ autoreconf -vfi
 add more info for multicast function(by tangyong):
 1. for windows, please install MinGW, and enter Msys by Run "msys\1.0\msys.bat" in cmdline.
 2. When make in MinGW and Linux, must run" make clean" after make, then switch to another system from origin, like " linux to windows" or "windows to linux".
+3. when make error, try "rm -rf .deps", then reconfigure
  
