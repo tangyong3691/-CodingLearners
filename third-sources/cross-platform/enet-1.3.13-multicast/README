@@ -1,0 +1,19 @@
+Please visit the ENet homepage at http://enet.bespin.org for installation
+and usage instructions.
+
+If you obtained this package from github, the quick description on how to build
+is:
+
+# Generate the build system.
+
+autoreconf -vfi
+
+# Compile and install the library.
+
+./configure && make && make install
+
+---------------------------------------
+add more info for multicast function(by tangyong):
+1. for windows, please install MinGW, and enter Msys by Run "msys\1.0\msys.bat" in cmdline.
+2. When make in MinGW and Linux, must run" make clean" after make, then switch to another system from origin, like " linux to windows" or "windows to linux".
+ 
