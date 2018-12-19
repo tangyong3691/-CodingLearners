@@ -12,7 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
  * GNU General Public License for more details.
- *
+*
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
@@ -32,5 +32,17 @@ int main()
             printf("%02x ",uu[i]);
         }
         printf("\n");
-        return 0;
+	i = 0;
+	int k=0;
+	for(k=0;k<4;k++) printf("%02x", uu[i++]);
+        printf("-");
+        for(k=0;k<2;k++) printf("%02x", uu[i++]);
+        printf("-");
+        for(k=0;k<2;k++) printf("%02x", uu[i++]);
+        printf("-");
+        for(k=0;k<2;k++) printf("%02x", uu[i++]);
+        printf("-");
+        for(k=0;k<6;k++) printf("%02x", uu[i++]);	
+        printf("\n\n");
+	return 0;
 }
