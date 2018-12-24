@@ -55,7 +55,7 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
+var srvlistenport = 9035;
 app.listen(9035);
-
+console.log("listen:" + srvlistenport);
 module.exports = app;
