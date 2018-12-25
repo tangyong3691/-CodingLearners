@@ -36,6 +36,22 @@ window.onload = function() {
     // set callback handlers
     client.onConnectionLost = function(responseObject) {
         console.log("Connection Lost: " + responseObject.errorMessage);
+        /*client.connect({
+            cleanSession: true,
+            onSuccess: onConnect
+        });*/
+        function MQTTreconnect() {
+            console.log("reconnect mqtt server");
+            client.connect({
+                cleanSession: true,
+                onSuccess: onConnect,
+                onFailure: function(message) {
+                    setTimeout(MQTTreconnect, 10000);
+                }
+            });
+        };
+
+        setTimeout(MQTTreconnect, 10000);
     }
 
     client.onMessageArrived = function(message) {
@@ -43,6 +59,7 @@ window.onload = function() {
     }
 
     client.connect({
+        cleanSession: true,
         onSuccess: onConnect
     });
 };

@@ -26,3 +26,14 @@ video {
     display: flex;
     flex-wrap: wrap;
 }
+
+.mqttcontainer input {
+    width: 100%;
+    padding-bottom: 2em;
+    padding: 1.5em;
+}
+
+.mqttcontainer label {
+    position: relative;
+    left: 0px;
+}
