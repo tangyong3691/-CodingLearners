@@ -2,8 +2,19 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var user = require('../database/db').user;
+var fs = require('fs');
+var path = require('path');
 
 var sqlitelogindb = user();
+global.lclfileconfig = {};
+(function() {
+    console.log("local config file:" + path.join(__dirname, '../config.json'));
+    if (fs.existsSync(path.join(__dirname, '../config.json'))) {
+        global.lclfileconfig = JSON.parse(fs.readFileSync(path.join(__dirname, '../config.json')).toString());
+        console.log("fileconfig:" + JSON.stringify(global.lclfileconfig));
+    };
+})();
+
 /* GET home page. */
 router.get('/', function(req, res) {
     res.render('index', { title: 'index' });
@@ -90,8 +101,11 @@ router.post('/ucenter', function(req, res) {
                 sqlitelogindb.all("SELECT * FROM resttestab1 WHERE name = '" + query_doc.name + "' AND password = '" + query_doc.password + "'", function(err, rows) {
                     if (err) console.log("e:" + err);
                     let contador = 0;
+                    var mqttServerIp = "115.153.77.48";
+                    if (global.lclfileconfig.hasOwnProperty("mqttServerIp")) mqttServerIp = global.lclfileconfig.mqttServerIp;
+                    if (global.lclfileconfig.hasOwnProperty("mqttServerPort")) mqttServerIp += ":" + global.lclfileconfig.mqttServerPort;
                     if (rows.length) {
-                        res.render('ucenter', { title: query_doc.name });
+                        res.render('ucenter', { title: query_doc.name, mqttsrvi: mqttServerIp });
                     } else {
                         res.redirect('/opret?resultn=' + encodeURIComponent('登录状态:') + '&ret=failed');
                     }

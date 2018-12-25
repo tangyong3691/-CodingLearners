@@ -1,15 +1,6 @@
 var mqttsrvip = "171.221.141.157";
-var client = new Paho.MQTT.Client(mqttsrvip, Number(9007), "/", "clientId");
-
-// set callback handlers
-client.onConnectionLost = function(responseObject) {
-    console.log("Connection Lost: " + responseObject.errorMessage);
-}
-
-client.onMessageArrived = function(message) {
-    console.log("Message Arrived: " + message.payloadString);
-}
-
+var mqttsrvport = 1883;
+var client;
 // Called when the connection is made
 function onConnect() {
     console.log("Connected!");
@@ -26,6 +17,31 @@ function sendmqttmsga() {
 
 
 window.onload = function() {
+    var sip = document.getElementById('mqttconfigserver_id').textContent;
+    //console.log("tt128:" + sip);
+    if (sip.length) {
+        if (sip.match(":")) {
+            var spind = sip.indexOf(":");
+            mqttsrvip = sip.slice(0, spind);
+            mqttsrvport = Number(sip.slice(spind + 1));
+            console.log("typarse mqttserver con:" + mqttsrvip + "::" + mqttsrvport);
+        } else {
+            mqttsrvip = sip;
+        }
+
+        //mqttsrvport = Number(9007)
+    }
+    client = new Paho.MQTT.Client(mqttsrvip, mqttsrvport, "/", "clientId");
+
+    // set callback handlers
+    client.onConnectionLost = function(responseObject) {
+        console.log("Connection Lost: " + responseObject.errorMessage);
+    }
+
+    client.onMessageArrived = function(message) {
+        console.log("Message Arrived: " + message.payloadString);
+    }
+
     client.connect({
         onSuccess: onConnect
     });
