@@ -13,11 +13,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
     <script src="/js/mqttclienta.js" type="text/javascript"></script>
 
+
 </head>
 
 <body>
     <p>Welcome :
-        <%= title %>
+        <p id="client-account-login-id">
+            <%= title %>
+        </p>
     </p>
     <h1>Hello World</h1>
     <p>Welcome to</p>
@@ -32,6 +35,13 @@
         <input name="mqttmessage" id="mqttmessage_id" maxlength="512" placeholder="消息" value="message" type="text">
         <br>
         <button onclick="sendmqttmsga();">发送</button>
+        <hr>
+        <div style="width: 100%;">
+            <label>
+            收到：            
+        </label>
+            <pre id="mqttmessage_receive_id"></pre>
+        </div>
     </div>
 
     </div>

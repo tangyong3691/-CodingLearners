@@ -30,6 +30,10 @@ router.get('/login', function(req, res) {
     res.render('login', { title: 'login' });
 });
 
+router.get('/test', function(req, res) {
+    res.render('test');
+});
+
 
 router.get('/accountnew', function(req, res) {
     res.render('accountnew', { title: '创建帐号' });
@@ -96,6 +100,7 @@ router.post('/ucenter', function(req, res) {
     var query_doc = { name: req.body.name, password: req.body.password };
     sqlitelogindb.serialize(function() {
         console.log("ttyy: " + JSON.stringify(query_doc));
+        console.log("ttyy account: " + query_doc.name + "len:" + query_doc.name.length);
         sqlitelogindb.run("CREATE TABLE IF NOT EXISTS resttestab1  (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, password TEXT)",
             function() {
                 sqlitelogindb.all("SELECT * FROM resttestab1 WHERE name = '" + query_doc.name + "' AND password = '" + query_doc.password + "'", function(err, rows) {

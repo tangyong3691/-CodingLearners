@@ -6,12 +6,22 @@ function onConnect() {
     console.log("Connected!");
     var mqttPInfo = document.getElementById("mqtt-client-in");
     mqttPInfo.style.visibility = "visible";
+    subscribeMqttTopic("i3rqu-e5d291db-b61b-44de-9ad9-RSA256-key");
 
+}
+
+function subscribeMqttTopic(thisTopic) {
+    var subscribeOptions = {
+        qos: 0
+    };
+    client.subscribe(thisTopic, subscribeOptions);
+    console.log("subscribe:" + thisTopic);
 }
 
 function sendmqttmsga() {
     var message = new Paho.MQTT.Message(document.getElementById('mqttmessage_id').value);
     message.destinationName = document.getElementById('mqtttitle_id').value;
+    message.qos = 0;
     client.send(message);
 }
 
@@ -31,7 +41,15 @@ window.onload = function() {
 
         //mqttsrvport = Number(9007)
     }
-    client = new Paho.MQTT.Client(mqttsrvip, mqttsrvport, "/", "clientId");
+    var mqttclient_login_account = document.getElementById('client-account-login-id').textContent;
+    //console.log("mqtt acount:" + mqttclient_login_account);
+    //console.log("mqtt acountn leng:" + mqttclient_login_account.length);
+    var ss = mqttclient_login_account.replace(/ /g, '');
+    ss = ss.replace(/\r\n/g, '');
+    ss = ss.replace(/\r/g, '');
+    ss = ss.replace(/\n/g, '');
+    console.log("mqtt acount:" + ss + " len:" + ss.length);
+    client = new Paho.MQTT.Client(mqttsrvip, mqttsrvport, "/", ss);
 
     // set callback handlers
     client.onConnectionLost = function(responseObject) {
@@ -55,7 +73,12 @@ window.onload = function() {
     }
 
     client.onMessageArrived = function(message) {
+        console.log("Message Arrived topic: " + message.destinationName);
+        //console.dir(message);
         console.log("Message Arrived: " + message.payloadString);
+
+
+        document.getElementById('mqttmessage_receive_id').textContent = message.payloadString;
     }
 
     client.connect({
