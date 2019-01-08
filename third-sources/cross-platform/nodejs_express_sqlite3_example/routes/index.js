@@ -21,7 +21,14 @@ router.get('/', function(req, res) {
 });
 
 router.get('/opret', function(req, res) {
-    res.render('result', { title: decodeURIComponent(req.query.resultn), result: req.query.ret });
+    var renderArg = { title: decodeURIComponent(req.query.resultn), result: req.query.ret };
+
+    if (req.query.hasOwnProperty('faildescribe')) {
+        renderArg.result = decodeURIComponent(req.query.faildescribe);
+    } else if (req.query.ret == 'success') {
+        renderArg.result = '成功';
+    }
+    res.render('result', renderArg);
 });
 
 
@@ -72,9 +79,9 @@ router.post('/accountnewa', function(req, res) {
                         var stmt = sqlitelogindb.prepare("INSERT INTO resttestab1(name,password) VALUES (?,?)");
                         stmt.run(query_doc.name, query_doc.password);
                         stmt.finalize();
-                        res.redirect('/opret?resultn=' + encodeURIComponent('创建帐号') + '&ret=sucess');
+                        res.redirect('/opret?resultn=' + encodeURIComponent('创建帐号') + '&ret=success');
                     } else {
-                        res.redirect('/opret?resultn=' + encodeURIComponent('创建帐号') + '&ret=failed');
+                        res.redirect('/opret?resultn=' + encodeURIComponent('创建帐号') + '&ret=failed' + '&faildescribe=' + encodeURIComponent('失败：此帐号已存在，请填写新的帐号'));
                     }
                 });
 

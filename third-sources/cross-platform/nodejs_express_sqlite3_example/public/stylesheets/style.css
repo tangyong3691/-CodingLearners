@@ -33,6 +33,12 @@ video {
     padding: 1.5em;
 }
 
+.mqttcontainer pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    tab-width: 4;
+}
+
 .mqttcontainer label {
     position: relative;
     left: 0px;

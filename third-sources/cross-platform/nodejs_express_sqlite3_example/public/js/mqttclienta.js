@@ -19,10 +19,25 @@ function subscribeMqttTopic(thisTopic) {
 }
 
 function sendmqttmsga() {
-    var message = new Paho.MQTT.Message(document.getElementById('mqttmessage_id').value);
-    message.destinationName = document.getElementById('mqtttitle_id').value;
-    message.qos = 0;
-    client.send(message);
+    var sendmsg = document.getElementById('mqttmessage_id').value;
+    var sendtopic = document.getElementById('mqtttitle_id').value;
+    if (sendmsg && sendtopic) {
+        var message = new Paho.MQTT.Message(sendmsg);
+        message.destinationName = sendtopic;
+        message.qos = 0;
+        client.send(message);
+        console.log("send msg:" + sendmsg);
+        document.getElementById('mqttmessage_id').value = '';
+    }
+
+}
+
+function subscribemqtttopica() {
+    var topic = document.getElementById('mqttsubscribetitle_id').value;
+    if (topic) {
+        subscribeMqttTopic(topic);
+        document.getElementById('mqttsubscribetitle_id').value = "";
+    }
 }
 
 
@@ -79,6 +94,8 @@ window.onload = function() {
 
 
         document.getElementById('mqttmessage_receive_id').textContent = message.payloadString;
+        document.getElementById('mqtttopic_receive_id').textContent = message.destinationName;
+
     }
 
     client.connect({

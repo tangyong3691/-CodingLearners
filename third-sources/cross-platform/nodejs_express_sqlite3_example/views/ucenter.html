@@ -17,35 +17,46 @@
 </head>
 
 <body>
-    <p>Welcome :
+    <p>欢迎 :
         <p id="client-account-login-id">
             <%= title %>
         </p>
     </p>
-    <h1>Hello World</h1>
-    <p>Welcome to</p>
-    <p>你已经登陆</p>
+
     <div id="mqtt-client-in" class="mqttcontainer" style="visibility: hidden;">
+        <h2>主题消息收发</h2>
         <label name="mqttconfigserver" id="mqttconfigserver_id" style="visibility: hidden;"><%= mqttsrvi %></label>
-        <br>
-        <label>主题：</label>
-        <input name="mqtttitle" id="mqtttitle_id" maxlength="512" placeholder="标题" value="Sample" type="text">
-        <br>
-        <label>消息：</label>
-        <input name="mqttmessage" id="mqttmessage_id" maxlength="512" placeholder="消息" value="message" type="text">
-        <br>
-        <button onclick="sendmqttmsga();">发送</button>
-        <hr>
+        <div style="width: 100%;">
+            <label>主题：</label>
+            <input name="mqtttitle" id="mqtttitle_id" maxlength="512" placeholder="请填写标题" value="Sample" type="text">
+
+            <label>消息：</label>
+            <input name="mqttmessage" id="mqttmessage_id" maxlength="512" placeholder="请填写消息" value="message" type="text">
+            <br>
+            <button onclick="sendmqttmsga();">发送</button>
+        </div>
+        <div style="width: 100%;background: #ddd;height:0.2em;margin: 1em 0em 0.5em;">
+        </div>
         <div style="width: 100%;">
             <label>
             收到：            
         </label>
             <pre id="mqttmessage_receive_id"></pre>
+            <label>收到的主题：</label>
+            <p id="mqtttopic_receive_id"></p>
+        </div>
+        <div style="width: 100%;background: #ddd;height:0.2em;margin: 1em 0em 0.5em;">
+        </div>
+        <div style="width: 100%;">
+            <label>订阅主题：</label>
+            <input name="mqttsubscribetitle" id="mqttsubscribetitle_id" maxlength="512" placeholder="请填写订阅标题" value="theSampleTopic" type="text">
+            <button onclick="subscribemqtttopica();">订阅</button>
+        </div>
+        <div style="width: 100%;background: #ddd;height:0.2em;margin: 1em 0em 0.5em;">
         </div>
     </div>
 
-    </div>
-    <p><a href='../'>登出</a></p>
+    <p><a href='../'>退出</a></p>
 </body>
 
-</html>
+</htm>
