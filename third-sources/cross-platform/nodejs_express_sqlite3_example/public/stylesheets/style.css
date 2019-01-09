@@ -1,6 +1,6 @@
 body {
     padding: 1.5em;
-    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    font: 1.2em "Lucida Grande", Helvetica, Arial, sans-serif;
     padding-bottom: 2em;
 }
 
@@ -10,8 +10,12 @@ a {
 
 nav a,
 button {
-    min-width: 48px;
-    min-height: 48px;
+    min-width: 3em;
+    min-height: 3em;
+}
+
+input {
+    font-size: 1.0em;
 }
 
 img,
@@ -22,21 +26,29 @@ video {
 }
 
 .mqttcontainer {
-    width: 100%;
+    width: 96%;
     display: flex;
     flex-wrap: wrap;
+    font-size: 1.2em;
+    margin: 0.5em 2% 0.5em;
 }
 
 .mqttcontainer input {
-    width: 100%;
+    width: 98%;
     padding-bottom: 2em;
-    padding: 1.5em;
+    padding: 1%;
+    font-size: 1.0em;
+}
+
+.mqttcontainer button {
+    font-size: 0.8em;
 }
 
 .mqttcontainer pre {
     white-space: pre-wrap;
     word-wrap: break-word;
     tab-width: 4;
+    font-size: 0.8em;
 }
 
 .mqttcontainer label {
