@@ -14,7 +14,7 @@ var iauthdepot = global.invitationauthdepot = [];
 
 function randInvite6Create() {
     var text = "";
-    var possible = "ADEGHNQRTYadehnqty3457";
+    var possible = "ADEGHNQRTYadehnty3457";
     var ss = require('crypto').randomBytes(4).readUInt32BE(0);
     var range = possible.length;
     var ind;
