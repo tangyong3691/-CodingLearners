@@ -1,9 +1,12 @@
 var express = require('express');
 var router = express.Router();
+var crypto = require("crypto");
+
 //var mongoose = require('mongoose');
 var user = require('../database/db').user;
 var fs = require('fs');
 var path = require('path');
+
 
 var sqlitelogindb = user();
 global.lclfileconfig = {};
@@ -128,7 +131,7 @@ router.post('/accountnewa', function(req, res) {
     var query_doc = { name: req.body.name, password: req.body.password, invitate: req.body.invitatecode };
     sqlitelogindb.serialize(function() {
         console.log("ttyy: " + JSON.stringify(query_doc));
-        sqlitelogindb.run("CREATE TABLE IF NOT EXISTS resttestab1  (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, password TEXT)",
+        sqlitelogindb.run("CREATE TABLE IF NOT EXISTS resttestab1  (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, password TEXT, salt TEXT)",
             function() {
                 var isFirstAccount = false;
                 var checkfuser = function() {
@@ -164,8 +167,11 @@ router.post('/accountnewa', function(req, res) {
                         //console.log("aaa checkaccount");
                         sqlitelogindb.all("SELECT * FROM resttestab1 WHERE name = '" + query_doc.name + "'", function(err, rows) {
                             if (rows.length == 0) {
-                                var stmt = sqlitelogindb.prepare("INSERT INTO resttestab1(name,password) VALUES (?,?)");
-                                stmt.run(query_doc.name, query_doc.password);
+                                var stmt = sqlitelogindb.prepare("INSERT INTO resttestab1(name,password,salt) VALUES (?,?,?)");
+                                var tsalt = crypto.randomBytes(4).toString('hex');
+                                var shasum = crypto.createHash("sha256");
+                                var tpass = shasum.update(tsalt + " " + query_doc.password, "utf-8").digest("base64");
+                                stmt.run(query_doc.name, tpass, tsalt);
                                 stmt.finalize();
                                 res.redirect('/opret?resultn=' + encodeURIComponent('创建帐号') + '&ret=success');
                             } else {
@@ -206,25 +212,31 @@ router.post('/ucenter', function(req, res) {
     sqlitelogindb.serialize(function() {
         console.log("ttyy: " + JSON.stringify(query_doc));
         console.log("ttyy account: " + query_doc.name + "len:" + query_doc.name.length);
-        sqlitelogindb.run("CREATE TABLE IF NOT EXISTS resttestab1  (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, password TEXT)",
+        sqlitelogindb.run("CREATE TABLE IF NOT EXISTS resttestab1  (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, password TEXT, salt TEXT)",
             function() {
-                sqlitelogindb.all("SELECT * FROM resttestab1 WHERE name = '" + query_doc.name + "' AND password = '" + query_doc.password + "'", function(err, rows) {
+                //// "SELECT * FROM resttestab1 WHERE name = '" + query_doc.name + "' AND password = '" + query_doc.password + "'"
+                sqlitelogindb.all("SELECT * FROM resttestab1 WHERE name = '" + query_doc.name + "'", function(err, rows) {
                     if (err) console.log("e:" + err);
                     let contador = 0;
                     var mqttServerIp = "115.153.77.48";
                     if (global.lclfileconfig.hasOwnProperty("mqttServerIp")) mqttServerIp = global.lclfileconfig.mqttServerIp;
                     if (global.lclfileconfig.hasOwnProperty("mqttServerPort")) mqttServerIp += ":" + global.lclfileconfig.mqttServerPort;
                     if (rows.length) {
-                        var invite1 = randInvite6Create();
-                        var invite2 = randInvite6Create();
-                        if (iauthdepot.length > 10) {
-                            iauthdepot.shift();
-                            iauthdepot.shift();
+                        var shasum = crypto.createHash("sha256");
+                        var calpass = shasum.update(rows[0].salt + " " + query_doc.password, "utf-8").digest("base64");
+                        if (calpass == rows[0].password) {
+                            var invite1 = randInvite6Create();
+                            var invite2 = randInvite6Create();
+                            if (iauthdepot.length > 10) {
+                                iauthdepot.shift();
+                                iauthdepot.shift();
+                            }
+                            iauthdepot.push(invite1, invite2);
+                            res.render('ucenter', { title: query_doc.name, mqttsrvi: mqttServerIp, invite1: invite1, invite2: invite2 });
+                        } else {
+                            res.redirect('/opret?resultn=' + encodeURIComponent('登录状态:') + '&ret=failed');
                         }
-                        iauthdepot.push(invite1, invite2);
 
-
-                        res.render('ucenter', { title: query_doc.name, mqttsrvi: mqttServerIp, invite1: invite1, invite2: invite2 });
                     } else {
                         res.redirect('/opret?resultn=' + encodeURIComponent('登录状态:') + '&ret=failed');
                     }
