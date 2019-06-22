@@ -1,5 +1,7 @@
 var mqttsrvip = "171.221.141.157";
 var mqttsrvport = 1883;
+var mqttsrvpath = "/";
+var mqttsrvsec = false;
 var client;
 // Called when the connection is made
 function onConnect() {
@@ -43,13 +45,22 @@ function subscribemqtttopica() {
 
 window.onload = function() {
     var sip = document.getElementById('mqttconfigserver_id').textContent;
-    //console.log("tt128:" + sip);
+    console.log("tt128:" + sip);
     if (sip.length) {
         if (sip.match(":")) {
             var spind = sip.indexOf(":");
+            if (sip.slice(0, spind) == "wss") {
+                mqttsrvsec = true;
+            }
+            sip = sip.slice(spind + 1);
+            spind = sip.indexOf(":");
             mqttsrvip = sip.slice(0, spind);
-            mqttsrvport = Number(sip.slice(spind + 1));
-            console.log("typarse mqttserver con:" + mqttsrvip + "::" + mqttsrvport);
+            var sleftr = sip.slice(spind + 1);
+            var spind = sleftr.indexOf("/");
+            mqttsrvport = Number(sleftr.slice(0, spind));
+            mqttsrvpath = sleftr.slice(spind + 1);
+            //mqttsrvport = Number(sip.slice(spind + 1));
+            console.log("typarse mqttserver con:" + mqttsrvip + "::" + mqttsrvport + "::" + mqttsrvpath);
         } else {
             mqttsrvip = sip;
         }
@@ -64,7 +75,7 @@ window.onload = function() {
     ss = ss.replace(/\r/g, '');
     ss = ss.replace(/\n/g, '');
     console.log("mqtt acount:" + ss + " len:" + ss.length);
-    client = new Paho.MQTT.Client(mqttsrvip, mqttsrvport, "/", ss);
+    client = new Paho.MQTT.Client(mqttsrvip, mqttsrvport, mqttsrvpath, ss);
 
     // set callback handlers
     client.onConnectionLost = function(responseObject) {
@@ -77,6 +88,7 @@ window.onload = function() {
             console.log("reconnect mqtt server");
             client.connect({
                 cleanSession: true,
+                useSSL: mqttsrvsec,
                 onSuccess: onConnect,
                 onFailure: function(message) {
                     setTimeout(MQTTreconnect, 10000);
@@ -100,6 +112,7 @@ window.onload = function() {
 
     client.connect({
         cleanSession: true,
+        useSSL: mqttsrvsec,
         onSuccess: onConnect
     });
 };

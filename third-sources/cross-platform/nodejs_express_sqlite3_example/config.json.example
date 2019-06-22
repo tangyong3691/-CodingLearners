@@ -1,4 +1,6 @@
 {
     "mqttServerIp": "171.221.141.129",
-    "mqttServerPort": 1883
+    "mqttServerPort": 1883,
+    "mqttServerPath": "/",
+    "mqttServerSecret": false
 }

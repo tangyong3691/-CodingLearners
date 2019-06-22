@@ -219,8 +219,20 @@ router.post('/ucenter', function(req, res) {
                     if (err) console.log("e:" + err);
                     let contador = 0;
                     var mqttServerIp = "115.153.77.48";
-                    if (global.lclfileconfig.hasOwnProperty("mqttServerIp")) mqttServerIp = global.lclfileconfig.mqttServerIp;
+                    mqttServerIp = "ws:";
+                    if (global.lclfileconfig.hasOwnProperty("mqttServerSecret")) {
+                        if (global.lclfileconfig.mqttServerSecret)
+                            mqttServerIp = "wss:";
+                    }
+                    if (global.lclfileconfig.hasOwnProperty("mqttServerIp")) mqttServerIp += global.lclfileconfig.mqttServerIp;
                     if (global.lclfileconfig.hasOwnProperty("mqttServerPort")) mqttServerIp += ":" + global.lclfileconfig.mqttServerPort;
+                    if (global.lclfileconfig.hasOwnProperty("mqttServerPath")) {
+                        mqttServerIp += "/" + global.lclfileconfig.mqttServerPath;
+                    } else {
+                        mqttServerIp += "//";
+                    }
+
+
                     if (rows.length) {
                         var shasum = crypto.createHash("sha256");
                         var calpass = shasum.update(rows[0].salt + " " + query_doc.password, "utf-8").digest("base64");
