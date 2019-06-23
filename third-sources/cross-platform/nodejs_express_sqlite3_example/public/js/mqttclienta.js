@@ -3,13 +3,14 @@ var mqttsrvport = 1883;
 var mqttsrvpath = "/";
 var mqttsrvsec = false;
 var client;
+var last_subscribe = null;
 // Called when the connection is made
 function onConnect() {
     console.log("Connected!");
     var mqttPInfo = document.getElementById("mqtt-client-in");
     mqttPInfo.style.visibility = "visible";
     subscribeMqttTopic("i3rqu-e5d291db-b61b-44de-9ad9-RSA256-key");
-
+    if (last_subscribe) subscribeMqttTopic(last_subscribe);
 }
 
 function subscribeMqttTopic(thisTopic) {
@@ -38,6 +39,7 @@ function subscribemqtttopica() {
     var topic = document.getElementById('mqttsubscribetitle_id').value;
     if (topic) {
         subscribeMqttTopic(topic);
+        last_subscribe = topic;
         document.getElementById('mqttsubscribetitle_id').value = "";
     }
 }
