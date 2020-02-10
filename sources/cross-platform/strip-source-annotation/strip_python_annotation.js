@@ -46,6 +46,7 @@ lineReader.on('line', function (line) {
   var mutilstartingstr = false;
   var lastmultianflag = multianflag;
   var lineisempty = false;
+  var lineisannot = false;
 /* when is is empty line, remove*/
   if(!line.trim()) { 
      skipl = true; 
@@ -54,25 +55,35 @@ lineReader.on('line', function (line) {
 
   var findan1 = line.indexOf('#');
   if (findan1 >= 0) {
-      if (!line.substring(0,findan1).trim()) { skipl = true; }
+      if (!line.substring(0,findan1).trim()) { 
+         skipl = true;
+         lineisannot = true;
+        }
   }
   
   var findan2 = line.indexOf("'''");
   var findan3 = findan2;
   if (findan3 < 0) { findan3 = line.indexOf('"""'); }
 
-   if (findan3 >= 0) {
+   if (findan3 >= 0 && (!lineisannot)) {
        //var lastmulea = mutilleaved;
       var stleft = line.substring(0, findan3).trim();
         debugline('Line befor """: %s', stleft);
-       if  ( ((!stleft) && lasttailassign) ||  (stleft.length && stleft.lastIndexOf("=") == stleft.length - 1) ) { 
+       if  ( ((!stleft) && lasttailassign) ||  (stleft.length && 
+               ( stleft.lastIndexOf("=") == stleft.length - 1
+                     || stleft.lastIndexOf("[") == stleft.length - 1
+                     || stleft.lastIndexOf("(") == stleft.length - 1
+                     || stleft.lastIndexOf(",") == stleft.length - 1
+                        || stleft.lastIndexOf("{") == stleft.length - 1
+                    )
+               ) ) { 
             if(!mutilleaved) mutilleaved = true; 
               if(!lastmultianflag) mutilstartingstr = true;
         }
        //if (lastmulea) { mutilleaended = true;}
    }
   
-  if (findan3 >= 0) {
+  if (findan3 >= 0 && (!lineisannot)) {
        var f2s = -1;
       if (findan2 >= 0) {f2s = line.lastIndexOf("'''");}
         else { f2s = line.lastIndexOf('"""'); }
@@ -127,8 +138,9 @@ lineReader.on('line', function (line) {
        lasttailassign = false;
        if(!skipl) {
            var nstr = line.trim();
-            if(nstr.charAt(nstr.length - 1) == '=') {
-                  debugline('find Line tail is =');
+             var tailc = nstr.charAt(nstr.length - 1);
+            if(tailc == '=' || tailc == '[' || tailc == '(' || tailc == ',' || tailc == '{') {
+                  debugline('find Line tail is %o', tailc);
                   lasttailassign = true;
               }
         }  
