@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>
+
+    </title>
+
+    <link rel='stylesheet' href='style.css' />
+    <script src="mqttws31.min.js" type="text/javascript"></script>
+    <script src="forge.min.js" type="text/javascript"></script>
+    <script src="mqttclienta.js" type="text/javascript"></script>
+    <script src="fileio.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+    <p>欢迎 :
+        <p id="client-account-login-id">
+
+        </p>
+
+    </p>
+    <div>
+        <input type="file" id="filein" οnchange="fimport(evt);" />
+        <input type="button" id="bfileout" value="导出" onclick="fexport();" />
+    </div>
+
+    <div id="mqtt-client-in" class="mqttcontainer" style="visibility: hidden;">
+        <h2>主题消息收发</h2>
+        <label name="mqttconfigserver" id="mqttconfigserver_id" style="visibility: hidden;">ws:192.168.1.65:9010//</label>
+        <div style="width: 100%;">
+            <label>主题：</label>
+            <input name="mqtttitle" id="mqtttitle_id" maxlength="512" placeholder="请填写标题" value="Sample" type="text">
+
+            <label>消息：</label>
+            <input name="mqttmessage" id="mqttmessage_id" maxlength="512" placeholder="请填写消息" value="message" type="text">
+            <br>
+            <button onclick="sendmqttmsga();">发送</button>
+        </div>
+        <div style="width: 100%;background: #ddd;height:0.2em;margin: 1em 0em 0.5em;">
+        </div>
+        <div style="width: 100%;">
+            <label>
+            收到：            
+        </label>
+            <pre id="mqttmessage_receive_id"></pre>
+            <label>收到的主题：</label>
+            <p id="mqtttopic_receive_id"></p>
+        </div>
+        <div style="width: 100%;background: #ddd;height:0.2em;margin: 1em 0em 0.5em;">
+        </div>
+        <div style="width: 100%;">
+            <label>订阅主题：</label>
+            <input name="mqttsubscribetitle" id="mqttsubscribetitle_id" maxlength="512" placeholder="请填写订阅标题" value="theSampleTopic" type="text">
+            <button onclick="subscribemqtttopica();">订阅</button>
+        </div>
+        <div style="width: 100%;background: #ddd;height:0.2em;margin: 1em 0em 0.5em;">
+        </div>
+        <div style="width: 100%;">
+            <label>邀请码：</label>
+            <p>
+
+            </p>
+            <p>
+
+            </p>
+        </div>
+        <div style="width: 100%;background: #ddd;height:0.2em;margin: 1em 0em 0.5em;">
+        </div>
+
+    </div>
+
+    <p></p>
+</body>
+
+</htm>
