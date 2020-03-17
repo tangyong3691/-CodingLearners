@@ -16,9 +16,51 @@ function fimport(evt) {
     };
 }
 
+function fkloadclick(evt){
+    document.getElementById('filein').click();
+}
+
 function fileioonload() {
     console.log("load fielin onload");
     document.getElementById("filein").addEventListener('change', fimport, false);
+    document.getElementById("loadKeyFile").addEventListener('click', fkloadclick);
+    document.getElementById("bfileout").addEventListener('click', fsavetofile);
+}
+
+function fsavetofile(evt) {
+    result = prompt("保存配置", "wsecchat-config");
+    if(result) {
+        saveTextAsFile(result);
+    }
+}
+
+
+function saveTextAsFile(fileNameToSaveAs) {
+    var textToWrite = document.getElementById('textAreaToFile').value;//innerHTML
+    console.log("text is:" + textToWrite);
+    var textFileAsBlob = new Blob([ textToWrite ], { type: 'text/plain' });
+    //var fileNameToSaveAs = "ecc.plist";
+  
+    var downloadLink = document.createElement("a");
+    downloadLink.download = fileNameToSaveAs;
+    downloadLink.innerHTML = "Download File";
+    if (window.webkitURL != null) {
+      // Chrome allows the link to be clicked without actually adding it to the DOM.
+      downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+    } else {
+      // Firefox requires the link to be added to the DOM before it can be clicked.
+      downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+      downloadLink.onclick = destroySaveFileClickedElement;
+      downloadLink.style.display = "none";
+      document.body.appendChild(downloadLink);
+    }
+  
+    downloadLink.click();
+}
+
+function destroySaveFileClickedElement(event) {
+    // remove the link from the DOM
+    document.body.removeChild(event.target);
 }
 
 function fexport() {

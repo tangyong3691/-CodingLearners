@@ -25,8 +25,12 @@
 
     </p>
     <div>
-        <input type="file" id="filein" οnchange="fimport(evt);" />
-        <input type="button" id="bfileout" value="导出" onclick="fexport();" />
+            <textarea id="textAreaToFile" rows="3">
+                    Notes here...
+            </textarea>
+        <input type="button" id="loadKeyFile" value="导入配置" />
+        <input type="file" id="filein" style="display:none;" />
+        <input type="button" id="bfileout" value="导出" />
     </div>
 
     <div id="mqtt-client-in" class="mqttcontainer" style="visibility: hidden;">
