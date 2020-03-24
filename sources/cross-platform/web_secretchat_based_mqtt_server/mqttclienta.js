@@ -4,19 +4,34 @@ var mqttsrvpath = "/";
 var mqttsrvsec = false;
 var client;
 var last_subscribe = null;
+var sspretitle = "82109a0b-e411-4e2a-94a3-64a88fc9752f-ss-";
+var ss_current_topic = "";
 var rsakeypm = "i3rqu-e5d291db-b61b-44de-9ad9-RSA256-key";
 var rsakeyval = "";
 var rsa = forge.pki.rsa;
 var pki = forge.pki;
 var keypempair = {};
 var mqtt_account_randrom;
+
+var connect_srv_status = false;
+
+function subscribe_sec_current_topic() {
+    if(connect_srv_status) {
+        if(window.curretrsakey) subscribeMqttTopic (sspretitle + getmd5key(window.curretrsakey.publickey));
+    }
+}
+
+
+
 // Called when the connection is made
 function onConnect() {
     console.log("Connected!");
+    connect_srv_status = true;
     var mqttPInfo = document.getElementById("mqtt-client-in");
     mqttPInfo.style.visibility = "visible";
     subscribeMqttTopic(rsakeypm);
     subscribeMqttTopic(mqtt_account_randrom);
+    if(window.curretrsakey) subscribeMqttTopic (sspretitle + getmd5key(window.curretrsakey.publickey));
     if (last_subscribe) subscribeMqttTopic(last_subscribe);
 }
 
@@ -27,6 +42,15 @@ function subscribeMqttTopic(thisTopic) {
     client.subscribe(thisTopic, subscribeOptions);
     console.log("subscribe:" + thisTopic);
 }
+
+function getcryptrandom(len) {
+    var array = new Uint8Array(len);
+    console.log(array.toString());
+    window.crypto.getRandomValues(array);
+    console.log(array.toString());
+    return array.join('x');
+}
+
 
 function sendmqttmsga() {
     var sendmsg = document.getElementById('mqttmessage_id').value;
@@ -39,7 +63,13 @@ function sendmqttmsga() {
         /*        var privateKey = pki.decryptRsaPrivateKey(keypempair.privateKey, 'password');
                 var decrypted = privateKey.decrypt(encrypted);
                 console.log("dec:" + decrypted);*/
-        var message = new Paho.MQTT.Message(sendmsg + '\ue101好好5667');
+        var randstr = getcryptrandom(8);
+        var msgnstr = sendmsg + '\ue101' + randstr;
+        if(window.curretrsakey) {
+            console.log("secre: is::" + encrymsg(window.curretrsakey.publickey, msgnstr));
+            getmd5key(window.curretrsakey.publickey);
+        }
+        var message = new Paho.MQTT.Message(msgnstr);
         message.destinationName = sendtopic;
         message.qos = 0;
         client.send(message);
@@ -60,6 +90,7 @@ function subscribemqtttopica() {
 
 
 window.onload = function() {
+    secretioonload();
     fileioonload();
     var sip = document.getElementById('mqttconfigserver_id').textContent;
     console.log("tt128:" + sip);
@@ -105,16 +136,17 @@ window.onload = function() {
         console.log("ras key found!");
         keypempair = JSON.parse(rsakeyval);
     } else {
-        console.log("rsa key create!");
+        //console.log("rsa key create!");
         // var keypair = rsa.generateKeyPair({ bits: 2048, e: 0x10001 });
 
         //keypempair.privateKey = pki.encryptRsaPrivateKey(keypair.privateKey, 'password');
         //keypempair.publicKey = pki.publicKeyToPem(keypair.publicKey);
-        try {
+        
+        /*try {
             window.localStorage.setItem(rsakeypm + ss, JSON.stringify(keypempair));
         } catch (e) {
 
-        }
+        }*/
     }
 
 
@@ -123,6 +155,7 @@ window.onload = function() {
 
     // set callback handlers
     client.onConnectionLost = function(responseObject) {
+        connect_srv_status = false;
         console.log("Connection Lost: " + responseObject.errorMessage);
         /*client.connect({
             cleanSession: true,
@@ -147,6 +180,11 @@ window.onload = function() {
         console.log("Message Arrived topic: " + message.destinationName);
         //console.dir(message);
         console.log("Message Arrived: " + message.payloadString);
+        if(message.destinationName.indexOf(sspretitle) >= 0){
+            /* this is secret msg */
+            var 
+        }
+
         var receivmsg = message.payloadString;
         var findt = receivmsg.search('\ue101');
         if (findt >= 0) { receivmsg = receivmsg.substr(0, findt); }

@@ -12,6 +12,7 @@
     <link rel='stylesheet' href='style.css' />
     <script src="mqttws31.min.js" type="text/javascript"></script>
     <script src="forge.min.js" type="text/javascript"></script>
+    <script src="secretio.js" type="text/javascript"></script>
     <script src="mqttclienta.js" type="text/javascript"></script>
     <script src="fileio.js" type="text/javascript"></script>
 
@@ -28,6 +29,7 @@
         <textarea id="textAreaToFile" rows="3">
                     Notes here...
             </textarea>
+        <input type="button" id="creatsseasymkey" value="创建密钥" />
         <input type="button" id="loadKeyFile" value="导入配置" />
         <input type="file" id="filein" style="display:none;" />
         <input type="button" id="bfileout" value="导出" />
@@ -35,7 +37,7 @@
 
     <div id="mqtt-client-in" class="mqttcontainer" style="visibility: hidden;">
         <h2>主题消息收发</h2>
-        <label name="mqttconfigserver" id="mqttconfigserver_id" style="visibility: hidden;">ws:192.168.1.103:1884//</label>
+        <label name="mqttconfigserver" id="mqttconfigserver_id" style="visibility: hidden;">ws:127.0.0.1:1884//</label>
         <div style="width: 100%;">
             <label>主题：</label>
             <input name="mqtttitle" id="mqtttitle_id" maxlength="512" placeholder="请填写标题" value="Sample" type="text">
