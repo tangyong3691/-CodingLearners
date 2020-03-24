@@ -39,7 +39,7 @@ function sendmqttmsga() {
         /*        var privateKey = pki.decryptRsaPrivateKey(keypempair.privateKey, 'password');
                 var decrypted = privateKey.decrypt(encrypted);
                 console.log("dec:" + decrypted);*/
-        var message = new Paho.MQTT.Message(sendmsg);
+        var message = new Paho.MQTT.Message(sendmsg + '\ue101好好5667');
         message.destinationName = sendtopic;
         message.qos = 0;
         client.send(message);
@@ -147,9 +147,12 @@ window.onload = function() {
         console.log("Message Arrived topic: " + message.destinationName);
         //console.dir(message);
         console.log("Message Arrived: " + message.payloadString);
+        var receivmsg = message.payloadString;
+        var findt = receivmsg.search('\ue101');
+        if (findt >= 0) { receivmsg = receivmsg.substr(0, findt); }
 
 
-        document.getElementById('mqttmessage_receive_id').textContent = message.payloadString;
+        document.getElementById('mqttmessage_receive_id').textContent = receivmsg;
         document.getElementById('mqtttopic_receive_id').textContent = message.destinationName;
 
     }
