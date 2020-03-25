@@ -39,8 +39,12 @@
         <h2>主题消息收发</h2>
         <label name="mqttconfigserver" id="mqttconfigserver_id" style="visibility: hidden;">ws:127.0.0.1:1884//</label>
         <div style="width: 100%;">
-            <label>主题：</label>
-            <input name="mqtttitle" id="mqtttitle_id" maxlength="512" placeholder="请填写标题" value="Sample" type="text">
+            <label>用户选择：</label>
+            <input name="mqtttitle" id="mqtttitle_id" maxlength="512" placeholder="请填写标题" value="Sample" type="text" style="visibility: hidden;">
+
+            <select name="selectpeerns" id="selectthispeerns_id" >
+              
+            </select>
 
             <label>消息：</label>
             <input name="mqttmessage" id="mqttmessage_id" maxlength="512" placeholder="请填写消息" value="message" type="text">
@@ -78,6 +82,17 @@
         <div style="width: 100%;background: #ddd;height:0.2em;margin: 1em 0em 0.5em;">
         </div>
 
+    </div>
+
+    <div id="secret-key-public" class="secret-key-public-show" style="width: 100%" > 
+        <label style="width: 100%;">当前密钥：</label>
+        <div style="width: 100%;">
+            <p id="current-ss-key-public_id"></p>
+        </div>
+        <div style="width: 100%;background: #ddd;height:0.2em;margin: 1em 0em 0.5em;"></div>
+        <input name="peer-ss-key-public" id="peer-ss-key-public_id" maxlength="512" placeholder="待导入的对方密钥" value="" type="text" style="width: 100%;">
+        <button id="improt-peer-key-public_btid" onclick="clickPeerKeybutton();" disabled="disabled">导入对方密钥</button>
+        <input type="file" id="peerkeyfilein" style="display:none;" />
     </div>
 
     <p></p>

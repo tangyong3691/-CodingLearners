@@ -15,9 +15,60 @@ var mqtt_account_randrom;
 
 var connect_srv_status = false;
 
+function peer_change_notf(evt) {
+    
+    var nSel = document.getElementById("selectthispeerns_id");
+        var index = nSel.selectedIndex; // 选中索引
+        var text = nSel.options[index].text; 
+        console.log(text);
+}
+
+function peer_addto_select_items(peer) {
+    select = document.getElementById('selectthispeerns_id');
+
+    //for (var i = min; i<=max; i++){
+        var opt = document.createElement('option');
+        opt.value = peer.mdtit;//i;
+        opt.innerHTML = peer.aliasn;//i;
+        select.appendChild(opt);
+    //}
+}
+
+
+
+function addPeerPublicKey() {
+    var bspeer = document.getElementById('peer-ss-key-public_id').value;
+    if(bspeer){
+
+        console.log(forge.util.decode64(bspeer));
+    }
+   
+    //document.getElementById('peer-ss-key-public_id').textContent = "";
+}
+
 function subscribe_sec_current_topic() {
     if(connect_srv_status) {
-        if(window.curretrsakey) subscribeMqttTopic (sspretitle + getmd5key(window.curretrsakey.publickey));
+        if(window.curretrsakey && window.curretrsakey.publickey) subscribeMqttTopic (sspretitle + getmd5key(window.curretrsakey.publickey));
+    }
+}
+
+function create_current_public_key_accountinf(){
+    if(window.curretrsakey && window.curretrsakey.publickey) {
+        var accountss = {publickey: window.curretrsakey.publickey};
+        accountss.aliasn = mqtt_account_randrom;
+        if(!isNaN(Number(mqtt_account_randrom))){
+            var result = prompt("指定别名特征字符", "usr");
+            if(result){
+               accountss.aliasn = result + mqtt_account_randrom;
+            }
+        }
+ 
+        window.curretrsakey.aliasn = accountss.aliasn;
+
+        var pubaccinf = forge.util.encode64(JSON.stringify(accountss));
+         document.getElementById('current-ss-key-public_id').textContent = pubaccinf;
+         document.getElementById("improt-peer-key-public_btid").disabled = false; 
+         fsavepublicinfo(pubaccinf, window.curretrsakey.aliasn);
     }
 }
 
@@ -51,10 +102,41 @@ function getcryptrandom(len) {
     return array.join('x');
 }
 
+function get_thepeer_info() {
+     var pinf = {};
+     var nSel = document.getElementById("selectthispeerns_id");
+     var index = nSel.selectedIndex; 
+     var text = nSel.options[index].text; 
+     window.peerinfos.forEach(function (value) {
+        if(text && value.aliasn == text) {
+            pinf = value;
+        }
+      });
+    return pinf;
+}
+
+function find_rcvpeer_info(keymd){
+    var pinf = {};
+    if(keymd && keymd.len == 32) {
+        window.peerinfos.forEach(function (value) {
+            if(value.mdtit === keymd) {
+                pinf = value;
+            }
+          });
+    }
+    return pinf;
+}
+
 
 function sendmqttmsga() {
     var sendmsg = document.getElementById('mqttmessage_id').value;
-    var sendtopic = document.getElementById('mqtttitle_id').value;
+    //var sendtopic = document.getElementById('mqtttitle_id').value;
+
+    var sendtopic = "";
+    var peerinf = get_thepeer_info();
+    if(peerinf) {
+        sendtopic = sspretitle + peerinf.mdtit;
+    }
     if (sendmsg && sendtopic) {
         //console.log("pub:" + keypempair.publicKey);
         //var publicKey = pki.publicKeyFromPem(keypempair.publicKey);
@@ -64,16 +146,24 @@ function sendmqttmsga() {
                 var decrypted = privateKey.decrypt(encrypted);
                 console.log("dec:" + decrypted);*/
         var randstr = getcryptrandom(8);
-        var msgnstr = sendmsg + '\ue101' + randstr;
-        if(window.curretrsakey) {
+        var msgnstr = sendmsg; // + '\ue101' + randstr;
+        /*if(window.curretrsakey) {
             console.log("secre: is::" + encrymsg(window.curretrsakey.publickey, msgnstr));
             getmd5key(window.curretrsakey.publickey);
+        }*/
+        if(peerinf) {
+            msgnstr = encrymsg(peerinf.publickey, msgnstr);
+            console.log("send secinf:" + msgnstr);
+            msgnstr = window.curretrsakey.publickeymd + msgnstr;
         }
         var message = new Paho.MQTT.Message(msgnstr);
         message.destinationName = sendtopic;
         message.qos = 0;
         client.send(message);
         console.log("send msg:" + sendmsg);
+        console.log("send msg ss len:" + msgnstr.length);
+        console.log("send msg ss:" + msgnstr);
+        console.log("send topic:" + sendtopic);
         document.getElementById('mqttmessage_id').value = '';
     }
 
@@ -88,10 +178,16 @@ function subscribemqtttopica() {
     }
 }
 
+function usrioonload() {
+    document.getElementById("selectthispeerns_id").addEventListener('change', peer_change_notf, false);
+}
+
 
 window.onload = function() {
     secretioonload();
     fileioonload();
+    usrioonload();
+    window.peerinfos = [];
     var sip = document.getElementById('mqttconfigserver_id').textContent;
     console.log("tt128:" + sip);
     if (sip.length) {
@@ -180,12 +276,21 @@ window.onload = function() {
         console.log("Message Arrived topic: " + message.destinationName);
         //console.dir(message);
         console.log("Message Arrived: " + message.payloadString);
-        if(message.destinationName.indexOf(sspretitle) >= 0){
+        console.log("Message Arrived len: " + message.payloadString.length);
+        var sim = "";
+        if(message.destinationName.indexOf(sspretitle) >= 0 && message.payloadString){
             /* this is secret msg */
-            var 
+            var chatmsg = message.payloadString;
+            var rcvpper = find_rcvpeer_info(chatmsg.substr(0, 32));
+            if(rcvpper) {
+                console.log("Message Arrived sss: " + chatmsg.slice(32));
+                sim = decrymsg(window.curretrsakey.privatekey, chatmsg.slice(32));
+                
+            }
         }
 
         var receivmsg = message.payloadString;
+        if(sim) receivmsg = sim;
         var findt = receivmsg.search('\ue101');
         if (findt >= 0) { receivmsg = receivmsg.substr(0, findt); }
 

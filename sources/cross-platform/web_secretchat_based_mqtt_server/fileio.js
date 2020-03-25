@@ -16,6 +16,26 @@ function fimport(evt) {
     };
 }
 
+function fimportpeerkey(evt) {
+    var selectedFile = document.getElementById("peerkeyfilein").files[0]; 
+    var name = selectedFile.name; 
+    var size = selectedFile.size; 
+    
+    var reader = new FileReader(); 
+    reader.readAsText(selectedFile); 
+
+    reader.onload = function() {
+        //console.log(this.result); 
+        var peerj = JSON.parse(forge.util.decode64(this.result));
+        console.log(peerj);
+        if(peerj && peerj.publickey && peerj.aliasn && window.curretrsakey.publickey !== peerj.publickey ){
+            peerj.mdtit = getmd5key(peerj.publickey);
+            window.peerinfos.push(peerj);
+            peer_addto_select_items(peerj);
+        }
+    };
+}
+
 function fkloadclick(evt){
     document.getElementById('filein').click();
 }
@@ -23,20 +43,32 @@ function fkloadclick(evt){
 function fileioonload() {
     console.log("load fielin onload");
     document.getElementById("filein").addEventListener('change', fimport, false);
+    document.getElementById("peerkeyfilein").addEventListener('change', fimportpeerkey, false);
     document.getElementById("loadKeyFile").addEventListener('click', fkloadclick);
     document.getElementById("bfileout").addEventListener('click', fsavetofile);
+}
+
+function clickPeerKeybutton() {
+    document.getElementById('peerkeyfilein').click();
 }
 
 function fsavetofile(evt) {
     result = prompt("保存配置", "wsecchat-config");
     if(result) {
-        saveTextAsFile(result);
+        //saveTextAsFile(result);
+    }
+}
+
+function fsavepublicinfo(publicaccount, name) {
+    result = prompt("保存帐号公开密钥", "wsecchat-public-key" + name);
+    if(result) {
+        saveTextAsFile(result, publicaccount);
     }
 }
 
 
-function saveTextAsFile(fileNameToSaveAs) {
-    var textToWrite = document.getElementById('textAreaToFile').value;//innerHTML
+function saveTextAsFile(fileNameToSaveAs, textdata) {
+    var textToWrite = textdata;//document.getElementById('textAreaToFile').value;//innerHTML
     console.log("text is:" + textToWrite);
     var textFileAsBlob = new Blob([ textToWrite ], { type: 'text/plain' });
     //var fileNameToSaveAs = "ecc.plist";
