@@ -15,6 +15,18 @@ var mqtt_account_randrom;
 
 var connect_srv_status = false;
 
+
+function textAreaAdjust(o) {
+    o.style.height = "1px";
+    o.style.height = (2+o.scrollHeight)+"px";
+}
+
+function usr_messageinput_change_notf(evt) {
+    console.log("sshiivvvvv");
+    var emsg = document.getElementById("mqttmessage_id");
+    emsg.setAttribute('style', 'height:' + (emsg.scrollHeight) + 'px;overflow-y:hidden;');
+}
+
 function peer_change_notf(evt) {
     
     var nSel = document.getElementById("selectthispeerns_id");
@@ -59,7 +71,7 @@ function create_current_public_key_accountinf(){
         if(!isNaN(Number(mqtt_account_randrom))){
             var result = prompt("指定别名特征字符", "usr");
             if(result){
-               accountss.aliasn = result + mqtt_account_randrom;
+               accountss.aliasn = result + '-' + mqtt_account_randrom;
             }
         }
  
@@ -106,7 +118,8 @@ function get_thepeer_info() {
      var pinf = {};
      var nSel = document.getElementById("selectthispeerns_id");
      var index = nSel.selectedIndex; 
-     var text = nSel.options[index].text; 
+     
+     var text = (index >= 0) ? nSel.options[index].text : ""; 
      window.peerinfos.forEach(function (value) {
         if(text && value.aliasn == text) {
             pinf = value;
@@ -146,7 +159,7 @@ function sendmqttmsga() {
                 var decrypted = privateKey.decrypt(encrypted);
                 console.log("dec:" + decrypted);*/
         var randstr = getcryptrandom(8);
-        var msgnstr = sendmsg; // + '\ue101' + randstr;
+        var msgnstr = sendmsg + '\ue101' + randstr;
         /*if(window.curretrsakey) {
             console.log("secre: is::" + encrymsg(window.curretrsakey.publickey, msgnstr));
             getmd5key(window.curretrsakey.publickey);
@@ -180,6 +193,7 @@ function subscribemqtttopica() {
 
 function usrioonload() {
     document.getElementById("selectthispeerns_id").addEventListener('change', peer_change_notf, false);
+    //document.getElementById("mqttmessage_id").addEventListener('input', usr_messageinput_change_notf, false);
 }
 
 
@@ -285,6 +299,7 @@ window.onload = function() {
             if(rcvpper) {
                 console.log("Message Arrived sss: " + chatmsg.slice(32));
                 sim = decrymsg(window.curretrsakey.privatekey, chatmsg.slice(32));
+                console.log("rec decry msg:" + sim);
                 
             }
         }

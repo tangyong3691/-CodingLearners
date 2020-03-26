@@ -47,7 +47,7 @@
             </select>
 
             <label>消息：</label>
-            <input name="mqttmessage" id="mqttmessage_id" maxlength="512" placeholder="请填写消息" value="message" type="text">
+            <textarea id="mqttmessage_id" style="width: 100%;" onkeyup="textAreaAdjust(this)" style="overflow-y:hidden"></textarea>
             <br>
             <button onclick="sendmqttmsga();">发送</button>
         </div>
@@ -90,7 +90,7 @@
             <p id="current-ss-key-public_id"></p>
         </div>
         <div style="width: 100%;background: #ddd;height:0.2em;margin: 1em 0em 0.5em;"></div>
-        <input name="peer-ss-key-public" id="peer-ss-key-public_id" maxlength="512" placeholder="待导入的对方密钥" value="" type="text" style="width: 100%;">
+        <input name="peer-ss-key-public" id="peer-ss-key-public_id" maxlength="512" placeholder="待导入的对方密钥" value="" type="text" style="width: 100%;" style="visibility: hidden;">
         <button id="improt-peer-key-public_btid" onclick="clickPeerKeybutton();" disabled="disabled">导入对方密钥</button>
         <input type="file" id="peerkeyfilein" style="display:none;" />
     </div>

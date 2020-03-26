@@ -12,6 +12,7 @@ nav a,
 button {
     min-width: 3em;
     min-height: 3em;
+    font-size: 0.8em;
 }
 
 input {
@@ -40,6 +41,11 @@ video {
     font-size: 1.0em;
 }
 
+.mqttcontainer select{
+    padding: 1%;
+    font-size: 1.0em;
+}
+
 .mqttcontainer button {
     font-size: 0.8em;
 }
@@ -54,4 +60,12 @@ video {
 .mqttcontainer label {
     position: relative;
     left: 0px;
+}
+
+.mqttcontainer textarea {
+    width: 98%;
+    padding-bottom: 2em;
+    padding: 1%;
+    font-size: 1.0em;
+    height: auto;
 }

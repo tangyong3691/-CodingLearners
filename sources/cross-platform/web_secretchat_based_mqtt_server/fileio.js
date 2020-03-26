@@ -60,7 +60,7 @@ function fsavetofile(evt) {
 }
 
 function fsavepublicinfo(publicaccount, name) {
-    result = prompt("保存帐号公开密钥", "wsecchat-public-key" + name);
+    result = prompt("保存帐号公开密钥", "wsecchat-public-key-" + name);
     if(result) {
         saveTextAsFile(result, publicaccount);
     }
