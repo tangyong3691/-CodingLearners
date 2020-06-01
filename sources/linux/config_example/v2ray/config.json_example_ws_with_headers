@@ -1,0 +1,66 @@
+{
+  "log": {
+    "loglevel": "warning"
+  },
+  "inbound": {
+    "port": 1083,
+    "listen": "127.0.0.1",
+    "protocol": "socks",
+    "sniffing": {
+        "enabled": true,
+        "destOverride": ["http", "tls"]
+    },
+    "settings": {
+      "auth": "noauth",
+      "udp": false,
+      "ip": "127.0.0.1"
+    }
+  },
+  "outbound": {
+    "protocol": "vmess",
+    "settings": {
+      "vnext": [
+        {
+          "address": "ussedsdyfcn23862377.vtr5.com",
+          "port": 80,
+          "users": [
+            {
+              "id": "218c24ca-2739-4d46-8dc3-ee48e930a1f1",
+	      "level": 1,
+              "alterId": 2
+            }
+          ]
+        }
+      ]
+    },
+   
+    "streamSettings": {
+      "network": "ws",
+      "security": null,
+      "wsSettings": {
+	 "connectionReuse": false,
+	 "path": "/pa",
+         "headers": {
+            "Host": "uscn353868.v2des3.club.ahyim.cn"
+         }
+      }
+
+    },
+
+    "tag": "direct"
+  },
+  "policy": {
+    "levels": {
+      "0": {
+        "uplinkOnly": 0
+      }
+    }
+  },
+  "dns": {
+     "servers": [
+         "8.8.8.8",
+         "8.8.4.4",
+	 "localhost"
+      ]
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "log": {
+    "loglevel": "warning"
+  },
+  "inbound": {
+    "port": 1083,
+    "listen": "127.0.0.1",
+    "protocol": "socks",
+    "sniffing": {
+        "enabled": true,
+        "destOverride": ["http", "tls"]
+    },
+    "settings": {
+      "auth": "noauth",
+      "udp": false,
+      "ip": "127.0.0.1"
+    }
+  },
+  "outbound": {
+    "protocol": "vmess",
+    "settings": {
+      "vnext": [
+        {
+          "address": "v2-kr-002.adcdeuweu.asia",
+          "port": 443,
+          "users": [
+            {
+              "id": "af49cf6a-f98f-3df0-940e-dddb4d3bfd9b",
+	      "level": 1,
+              "alterId": 4
+            }
+          ]
+        }
+      ]
+    },
+   
+    "streamSettings": {
+      "network": "ws",
+      "security": "tls",
+      "wsSettings": {
+	 "connectionReuse": false,
+	 "path": "/v2ray"
+      }
+
+    },
+
+    "tag": "direct"
+  },
+  "policy": {
+    "levels": {
+      "0": {
+        "uplinkOnly": 0
+      }
+    }
+  },
+  "dns": {
+     "servers": [
+         "8.8.8.8",
+         "8.8.4.4",
+	 "localhost"
+      ]
+  }
+}
