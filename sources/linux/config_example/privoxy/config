@@ -1366,6 +1366,7 @@ enable-proxy-authentication-forwarding 0
         forward .icode9.com     .
         forward .21ic.com     .
         forward .ednchina.com     .
+        forward .jianshu.com     .
 #
 #      Note that if you got Tor through one of the bundles, you may
 #      have to change the port from 9050 to 9150 (or even another
