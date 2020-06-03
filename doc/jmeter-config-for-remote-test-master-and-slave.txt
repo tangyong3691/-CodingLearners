@@ -1,0 +1,23 @@
+1. master/slave all based linux system, all in the same local network
+2.  edit slave file 'jmeter.properties':
+         server.rmi.ssl.disable=true
+3. edit slave file 'jmeter-server':
+       RMI_HOST_DEF=-Djava.rmi.server.hostname=<this slave ip>
+4. start slave:
+    ./jmeter-server
+5. edit master file 'jmeter.properties':
+    server.rmi.ssl.disable=true
+    remote_hosts=<slave1 ip>, <slave2 ip>
+6. edit master file 'system.properties':
+   java.rmi.server.hostname=<master ip>
+7. start master:
+    ./jmeter
+   then you can from GUI, Run Remote Start
+
+8. if you mix windows/ linux , you should set fix port:
+ (slave) file 'jmeter.properties':
+    server_port=<servr port>
+    server.rmi.localport=<servr port>
+ (master) file 'jmeter.properties':
+     remote_hosts=<servreip>:<servr port>
+
