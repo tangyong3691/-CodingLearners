@@ -13,8 +13,10 @@
 7. start master:
     ./jmeter
    then you can from GUI, Run Remote Start
+8. you can run cmd line(with arg -r or -R <ip>):
+   jmeter -n -t Test.jmx  -l result.csv -e -o ./report/  -r
 
-8. if you mix windows/ linux , you should set fix port:
+9. if you mix windows/ linux , you should set fix port:
  (slave) file 'jmeter.properties':
     server_port=<servr port>
     server.rmi.localport=<servr port>
