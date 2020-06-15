@@ -1,0 +1,327 @@
+#user  nobody;
+worker_processes  1;
+
+#error_log  logs/error.log  info;
+#pid        logs/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+    #gzip  on;
+
+    #system monitor port
+    #upstream netmon {
+    #    server 127.0.0.1:19999;
+    #    keepalive 64;	
+    #}
+    
+    client_max_body_size 500m;
+
+    #filesvr upload port
+    upstream uploadsvr {
+        server 127.0.0.1:8266;
+        keepalive 64;
+    }
+
+    #iiot server
+    upstream tomcatserver{
+        server 127.0.0.1:8132;
+    }
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        #charset koi8-r;
+
+        #access_log  logs/host.access.log  main;
+
+        #location / {
+        #    root   html;
+        #    index  index.html index.htm;
+        #}
+
+        #iiot server api
+	location / {
+            proxy_pass http://tomcatserver/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_redirect off;
+    	}
+        location /api/ {
+            proxy_pass http://tomcatserver/api/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_redirect off;
+        }
+        location /api/admin/ {
+            proxy_pass http://tomcatserver/api/admin/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_redirect off;
+        }
+        location /api/beidouapp/ {
+            proxy_pass http://tomcatserver/api/beidouapp/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_redirect off;
+        }
+        #file download api
+        location ~/group[0-9]/M00 {
+            add_header 'Access-Control-Allow-Origin' '*';
+            ngx_fastdfs_module;
+        }
+        #file upload api
+        location /api/file/ {
+            proxy_redirect off;
+            proxy_set_header Host $host:$server_port;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_pass http://uploadsvr/api/file/;
+        }
+
+        #system monitor
+        #location = /sm {
+        #    return 301 /sm/;
+        #}
+
+        #location ~ /sm/(?<ndpath>.*) {
+        #    proxy_redirect off;
+        #    proxy_set_header Host $host;
+
+        #    proxy_set_header X-Forwarded-Host $host;
+        #    proxy_set_header X-Forwarded-Server $host;
+        #    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        #    proxy_http_version 1.1;
+        #    proxy_pass_request_headers on;
+        #    proxy_set_header Connection "keep-alive";
+        #    proxy_store off;
+        #    proxy_pass http://netmon/$ndpath$is_args$args;
+
+        #    gzip on;
+        #    gzip_proxied any;
+        #    gzip_types *;
+        #}
+
+        #filesvr upload
+        location = /fu {
+            return 301 /fu/;
+        }
+
+        location ~ /fu/(?<ndpath>.*) {
+            proxy_pass http://uploadsvr/$ndpath$is_args$args;
+            proxy_redirect off;
+            proxy_set_header Host $host:$server_port;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header REMOTE-HOST $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        } 
+
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+        # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+        #
+        #location ~ \.php$ {
+        #    proxy_pass   http://127.0.0.1;
+        #}
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        #location ~ \.php$ {
+        #    root           html;
+        #    fastcgi_pass   127.0.0.1:9000;
+        #    fastcgi_index  index.php;
+        #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        #    include        fastcgi_params;
+        #}
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        #location ~ /\.ht {
+        #    deny  all;
+        #}
+    }
+
+
+    # another virtual host using mix of IP-, name-, and port-based configuration
+    #
+    #server {
+    #    listen       8000;
+    #    listen       somename:8080;
+    #    server_name  somename  alias  another.alias;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+
+    # HTTPS server
+    #
+    server {
+        listen       443 ssl;
+        server_name  192.168.1.185;
+
+        ssl_certificate      /opt/nginx/ssl/yitong/self-ssl.crt;
+        ssl_certificate_key  /opt/nginx/ssl/yitong/self-ssl.key;
+
+    #    ssl_session_cache    shared:SSL:1m;
+    #    ssl_session_timeout  5m;
+
+    #    ssl_ciphers  HIGH:!aNULL:!MD5;
+    #    ssl_prefer_server_ciphers  on;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+    
+        location /iiot {
+           return 301 https://192.168.1.185:449;
+        }  
+      
+        location /ianalyst {
+           return 301 https://192.168.1.185:450;
+        } 
+ 
+        location /iuser {
+           return 301 https://192.168.1.185:451;
+        } 
+    }
+    
+      
+    server {
+        listen       449 ssl;
+        server_name  192.168.1.185;
+
+        ssl_certificate      /opt/nginx/ssl/yitong/self-ssl.crt;
+        ssl_certificate_key  /opt/nginx/ssl/yitong/self-ssl.key;
+
+    #    ssl_session_cache    shared:SSL:1m;
+    #    ssl_session_timeout  5m;
+
+    #    ssl_ciphers  HIGH:!aNULL:!MD5;
+    #    ssl_prefer_server_ciphers  on;
+
+       # location / {
+       #     root   html;
+       #     index  index.html index.htm;
+       # }
+    
+        location / {
+            proxy_pass https://tomcatserver/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_redirect off;
+        }  
+      
+    }
+
+
+    server {
+        listen       450 ssl;
+        server_name  192.168.1.185;
+
+        ssl_certificate      /opt/nginx/ssl/yitong/self-ssl.crt;
+        ssl_certificate_key  /opt/nginx/ssl/yitong/self-ssl.key;
+
+    #    ssl_session_cache    shared:SSL:1m;
+    #    ssl_session_timeout  5m;
+
+    #    ssl_ciphers  HIGH:!aNULL:!MD5;
+    #    ssl_prefer_server_ciphers  on;
+
+       # location / {
+       #     root   html;
+       #     index  index.html index.htm;
+       # }
+    
+        location / {
+            proxy_pass https://127.0.0.1:8000/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_redirect off;
+        }  
+      
+    }
+
+
+
+    server {
+        listen       451 ssl;
+        server_name  192.168.1.185;
+
+        ssl_certificate      /opt/nginx/ssl/yitong/self-ssl.crt;
+        ssl_certificate_key  /opt/nginx/ssl/yitong/self-ssl.key;
+
+    #    ssl_session_cache    shared:SSL:1m;
+    #    ssl_session_timeout  5m;
+
+    #    ssl_ciphers  HIGH:!aNULL:!MD5;
+    #    ssl_prefer_server_ciphers  on;
+
+       # location / {
+       #     root   html;
+       #     index  index.html index.htm;
+       # }
+    
+        location / {
+            proxy_pass https://192.168.1.185:8443/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+          #  proxy_set_header Host $host;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            add_header Access-Control-Allow-Origin *;
+            proxy_redirect default;
+        }  
+      
+    }
+
+}
