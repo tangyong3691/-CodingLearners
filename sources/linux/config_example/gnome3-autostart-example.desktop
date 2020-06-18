@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=Gedit
+GenericName=Edit Tool
+Comment=edit share file for windows
+Exec=gedit /ablk_windows_data/temp/a-copy-paste/copypaste.txt
+Icon=gedit
+Terminal=false
+Type=Application
+Categories=Accessories;Application;
+X-GNOME-Autostart-enabled=true
+Hidden=false
+
