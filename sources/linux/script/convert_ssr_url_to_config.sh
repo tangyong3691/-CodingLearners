@@ -1,12 +1,28 @@
-if [ ! -e "./de_base64_url.sh" ] ; then
-  echo "don't find de_base64_url.sh"
-  exit 0  
-fi	
-
 if [ "a$1" == "a" ] ; then
   echo "no arguments"
   exit 0
 fi
+
+softcmd=$0
+softpwd=${softcmd%/*}
+#echo "soft:$softpwd"
+softname=${softcmd##*/}
+softpwdfirst=${softcmd:0:1}
+#echo "fri:$softpwdfirst"
+
+if [ "a$softpwd" == "a$softname" ] ; then
+	callpath=`which $softname`
+elif [ "$softpwdfirst" == "/" ] ; then
+	callpath=$softpwd
+else
+	callpath=$PWD/$softpwd
+fi
+
+if ! [ -f  "$callpath/de_base64_url.sh" ] ; then
+	echo "Couldn't find :$callpath/de_base64_url.sh"
+	exit 1
+fi
+
 
 ssrurl=$1
 ssrurl=${ssrurl#*//}
@@ -14,7 +30,7 @@ ssrurl=${ssrurl#*//}
 #echo "ssr://server:port:protocol:method:obfs:password_base64/?params_base64"
 #echo "-----------"
 
-demain=`./de_base64_url.sh $ssrurl`
+demain=`$callpath/de_base64_url.sh $ssrurl`
 
 #echo $demain
 
@@ -38,7 +54,7 @@ obfsinfo=${minfo%%:*}
 
 
 passwd=${minfo##*:}
-passwd=`./de_base64_url.sh $passwd`
+passwd=`$callpath/de_base64_url.sh $passwd`
 #echo "passwd = $passwd"
 
 parm=${demain#*/?}
@@ -48,7 +64,7 @@ do
 thep=${parm%%&*}
 argn=${thep%=*}
 valn=${thep#*=}
-tval=`./de_base64_url.sh $valn`
+tval=`$callpath/de_base64_url.sh $valn`
 if [ "$argn" == "obfsparam" ] ; then
 obfsparaminfo=$tval
 fi
