@@ -44,7 +44,7 @@ done
 echo "----"
 echo $emk | openssl base64 -d
 echo "  "
-echo $ssu
+echo $dessru
 
 
 
