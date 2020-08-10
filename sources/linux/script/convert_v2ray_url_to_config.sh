@@ -36,6 +36,10 @@ if [ "a$chkit" == "a" ] ; then
 fi
 
 leftinf=$demain
+leftinf=${leftinf%\}*}
+leftinf=${leftinf#*\{}
+#echo "this: $leftinf"
+
 
 while true ;
 do
@@ -50,6 +54,9 @@ tval=${tinf#*:}
 #echo "$tval"
 #tval="${tval#\"}"
 #tval="${tavl%\"}"
+##echo "tsignnnn:$tsign"
+##echo "tvallll:$tval"
+
 tval=`sed -e 's/^"//' -e 's/"$//' <<<"$tval"`
 
 #echo "$tval"
