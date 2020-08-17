@@ -75,6 +75,9 @@ elif [ "$tsign" == "port" ] ; then
 	inf_port=$tval
 elif [ "$tsign" == "tls" ] ; then
 	inf_tls=$tval
+elif [ "$tsign" == "host" ] ; then
+	inf_host=$tval
+	inf_host=`sed -e 's/^[ \t]*//' -e 's/[ \t]*$//' <<<"$inf_host"`
 fi
 
 
@@ -131,7 +134,14 @@ echo "      \"network\": \"$inf_net\","
 echo "      \"security\": \"$inf_tls\","
 echo '      "wsSettings": {'
 echo '         "connectionReuse": false,'
+if [ "a$inf_host" == "a" ] ; then
 echo "         \"path\": \"$inf_path\""
+else
+echo "         \"path\": \"$inf_path\","
+echo '         "headers": {'
+echo "            \"Host\":\"$inf_host\""
+echo '         }'
+fi
 echo '      }'
 echo '    },'
 echo '    "tag": "direct"'
