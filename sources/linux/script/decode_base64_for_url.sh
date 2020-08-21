@@ -6,7 +6,10 @@ echo "need argument";
 exit
 fi
 
-strcoded=`echo "$1" | sed 's/-/+/g' | sed 's/_/\//g'`;
+b64str=$1
+b64str=${b64str#*://}
+
+strcoded=`echo "$b64str" | sed 's/-/+/g' | sed 's/_/\//g'`;
 
 lencoded=${#strcoded};
 remind=$((lencoded%4));
