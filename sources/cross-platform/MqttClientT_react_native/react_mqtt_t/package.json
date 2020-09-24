@@ -1,0 +1,7 @@
+{
+  "name": "react_mqtt_t",
+  "version": "1.0.0",
+  "description": "mqtt compent demo",
+  "main": "index.js",
+  "license": "MIT"
+}
