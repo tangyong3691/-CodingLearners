@@ -30,6 +30,10 @@ if ! [ -f  "$callpath/de_base64_url.sh" ] ; then
 	exit 1
 fi
 
+echo "convert file format linux"
+sed -i 's/\r$//g' $searchfile
+echo "  "
+
 while read line; do
 #	echo "$line"
 	messsign=${line%:*}

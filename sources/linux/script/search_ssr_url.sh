@@ -30,6 +30,11 @@ if ! [ -f  "$callpath/get_ssr_remarks.sh" ] ; then
 	exit 1
 fi
 
+echo "convert file format linux"
+sed -i 's/\r$//g' $searchfile
+echo "  "
+
+
 while read line; do
 #	echo "$line"
 	messsign=${line%:*}
