@@ -51,12 +51,19 @@ tsign=${tsign#*\"}
 tsign=${tsign%\"*}
 
 tval=${tinf#*:}
+tval=`echo "${tval}" | head -1`
+tval=`sed -e 's/\n$//' <<<"$tval"`
+tval=`sed -e 's/\r$//' <<<"$tval"`
 #echo "$tval"
+#echo "${#tval}"
 #tval="${tval#\"}"
 #tval="${tavl%\"}"
 ##echo "tsignnnn:$tsign"
 ##echo "tvallll:$tval"
 
+tval=`sed -e 's/^[ ]*//' -e 's/[ ]*$//' <<<"$tval"`
+#echo "$tval"
+#echo "${#tval}"
 tval=`sed -e 's/^"//' -e 's/"$//' <<<"$tval"`
 
 #echo "$tval"
@@ -95,7 +102,7 @@ done
 #echo "$inf_path"
 #echo "$inf_port"
 #echo "$inf_tls"
-
+#echo "$inf_tls" > ./temp_log111
 #echo "----start ouput config---"
 
 echo "{"
@@ -132,6 +139,13 @@ echo '    },'
 echo '    "streamSettings": {'
 echo "      \"network\": \"$inf_net\","
 echo "      \"security\": \"$inf_tls\","
+
+if [ "a$inf_host" != "a" ]  && [ "a$inf_tls" == "atls" ] ; then
+echo '      "tlsSettings": {'
+echo "        \"serverName\": \"$inf_host\""
+echo '      },'
+fi
+
 echo '      "wsSettings": {'
 echo '         "connectionReuse": false,'
 if [ "a$inf_host" == "a" ] ; then
