@@ -38,12 +38,14 @@ while read line; do
 #	echo "$line"
 	messsign=${line%:*}
 #	echo "$messsign"
-	demessinfo=`$callpath/de_base64_url.sh ${line##*/}`
+	demessinfo=`$callpath/de_base64_url.sh ${line#*://}`
 #	echo $demessinfo
 	searched=`echo $demessinfo | grep $searchstring`
 	if [ "a$searched" != "a" ] ; then
 		echo "$line"
-		echo "   $demessinfo"
+		echo "$demessinfo"
+		echo "  "
+		echo "  "
 	fi
 done < $searchfile
 
