@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>
+        test page
+    </title>
+
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+<body>
+    <h1>test it</h1>
+    <p>tech: check code</p>
+
+
+    <script type="text/javascript">
+        var myWorker = new Worker('/js/testworker.js');
+        myWorker.onmessage = function(e) {
+
+            console.log('Message received from worker' + e.data);
+        };
+        myWorker.postMessage("hello");
+    </script>
+</body>
+
+</html>
