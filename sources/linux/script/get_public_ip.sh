@@ -1,3 +1,6 @@
+#echo "get public ip"
+#echo "depend command: dig +short myip.opendns.com @resolver1.opendns.com"
+
 if [ "a$1" == "a" ] ; then
 ipfile="/dataext/soft/myip_infos"
 else
