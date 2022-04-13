@@ -10,10 +10,12 @@
     "start": "node index.js"
   },
   "bin": "index.js",
-  "pkg":  {
-	  "assets": "public/**/*",
-	  "scripts": "public/**/*.js",
-	  "targets": [ "host" ],
-	  "outputPath": "dist"
+  "pkg": {
+    "assets": "public/**/*",
+    "scripts": "public/**/*.js",
+    "targets": [
+      "host"
+    ],
+    "outputPath": "dist"
   }
 }

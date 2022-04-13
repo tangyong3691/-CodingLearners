@@ -1,7 +1,8 @@
 
 -----how to pack into a single executable--------------------
-1. npm install -g pkg
-2. pkg .
+1. npm install
+2. npm install -g pkg
+3. pkg .
 
 --------------------------
 
