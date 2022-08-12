@@ -1,0 +1,14 @@
+[Unit]
+Description=autossh local http server (nodejs) Daemon.
+After=network.target
+Requires=nodejs-http-server.service
+
+[Service]
+Type=simple
+User=ty
+Group=ty
+Environment="AUTOSSH_GATETIME=0"
+ExecStart=/usr/bin/autossh -M 0 -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -M 35038 -CNR 35039:localhost:8080 tangyong3691@118.190.69.63 -p 21345
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,13 @@
+[Unit]
+Description=get public ip (bash scrpit) Daemon.
+After=network.target
+ConditionPathExists=/home/ty/bash_scripts_collect/get-public-ip.sh
+ConditionPathExists=/home/ty/node_http_server_root
+ConditionPathExists=/home/ty/bash_scripts_collect/loopfilekeep.txt
+
+[Service]
+Type=simple
+ExecStart=/home/ty/bash_scripts_collect/get-public-ip.sh /home/ty/node_http_server_root/ip.txt 600
+
+[Install]
+WantedBy=multi-user.target
