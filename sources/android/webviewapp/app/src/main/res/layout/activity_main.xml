@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:visibility="visible"
     tools:context=".MainActivity"
-    tools:visibility="visible" >
+    tools:visibility="visible">
 
     <EditText
         android:id="@+id/editTextTextPersonName3"
@@ -24,6 +24,7 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:text="http://192.168.1.14:3009"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,4 +38,16 @@
         android:text="Enter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName3" />
+
+    <AutoCompleteTextView
+        android:id="@+id/acTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:isScrollContainer="true"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:text="http://192.168.1.14:3009"
+        android:textSize="24sp"
+        tools:layout_editor_absoluteX="17dp"
+        tools:layout_editor_absoluteY="282dp" />
 </android.support.constraint.ConstraintLayout>
