@@ -10,6 +10,7 @@ client and server, running under UNIX and Win32.
 fixed: set a special local ip when multi local ips exist.
 
 # Building
+(windows build tool:  cmake , visual studio)
 To compile, use
 
     mkdir build
@@ -18,4 +19,8 @@ To compile, use
     cmake --build .
 
 #Running
-  (multicast send with binary data from the special local ip) server 192.168.1.129 225.0.18.3 5786 -1 -1
+  (multicast send) server <local ip> 225.0.1.3 5786
+   (loop send, special hex data)         Debug\server.exe <local ip> 227.5.5.55 23335 -1 -1 
+   
+(only running in windows10) Release\VC_redist.x64.exe
+                            Release\server.exe <local ip> 227.5.5.55 23335 -1 -1

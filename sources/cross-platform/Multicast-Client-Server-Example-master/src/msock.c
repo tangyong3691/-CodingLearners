@@ -61,7 +61,11 @@ SOCKET mcast_send_socket(char* localIP, char* multicastIP, char* multicastPort, 
 	int reuse = 1;
 	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char *)&reuse, sizeof(reuse)) < 0) {
 		fprintf(stderr,"Setting SO_REUSEADDR error");
+#ifdef WIN32
 		closesocket(sock);
+#else
+	    close(sock);
+#endif
 		return -1;
 	}
 
@@ -75,7 +79,11 @@ SOCKET mcast_send_socket(char* localIP, char* multicastIP, char* multicastPort, 
 	if (-1 == ret) {
 		printf("bind localaddr error!!!\n");
 		perror("bind:");
+#ifdef WIN32
 		closesocket(sock);
+#else
+	    close(sock);
+#endif
 		return -1;
 	}
 

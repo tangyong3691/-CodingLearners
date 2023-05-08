@@ -54,14 +54,3 @@ install(TARGETS client DESTINATION bin)
 
 
 
-SET(nnsend_SRCS
-   src/nnsend.c
-)
-
-add_executable(nnsend ${nnsend_SRCS})
-
-target_link_libraries(nnsend
-                      ${ADDITIONAL_LIBS}
-)
-
-install(TARGETS nnsend DESTINATION bin)
