@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  subversionedge:
+    image: svnedge/app:latest
+    container_name: svnserveredge
+    ports:
+      - 3343:3343
+      - 18080:18080
+    environment:
+      SET_PERMS: "false"
+    volumes:
+      - svndata:/home/svnedge/csvn/data
+volumes:
+  svndata:
