@@ -1,0 +1,15 @@
+[Unit]
+Description=frps example
+After=network-online.target 
+
+[Service]
+Type=simple
+ExecStart=/root/software/frp_0.49.0_linux_amd64/frps -c /root/software/frp_0.49.0_linux_amd64/frps.ini
+ExecReload=/root/software/frp_0.49.0_linux_amd64/frps -c /root/software/frp_0.49.0_linux_amd64/frps.ini
+TimeoutStartSec=0
+RestartSec=2
+Restart=always
+
+
+[Install]
+WantedBy=multi-user.target
