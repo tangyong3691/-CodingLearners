@@ -11,5 +11,6 @@ services:
       SET_PERMS: "false"
     volumes:
       - svndata:/home/svnedge/csvn/data
+    restart: always
 volumes:
   svndata:
