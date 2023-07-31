@@ -1,0 +1,11 @@
+version: '3.7'
+services:
+  opcuasrvt:
+    build: ./
+    image: opcua-server-smt-onlytest
+    container_name: opcua-srv-onlytest
+    restart: always    
+    # Ports (Required for REST connector)
+    network_mode: "host"
+    environment:
+      - OPCUA_SERVER_IP=192.168.1.231

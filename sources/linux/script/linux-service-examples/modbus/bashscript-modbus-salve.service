@@ -1,0 +1,10 @@
+[Unit]
+Description=auto start modbus slave (bashscript) Daemon.
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/tangyong/test/xc-gzcl-wlwgl-assist-env/diagslave/x86_64-linux-gnu/diagslave -m tcp
+
+[Install]
+WantedBy=multi-user.target

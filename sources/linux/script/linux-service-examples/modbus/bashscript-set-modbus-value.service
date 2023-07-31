@@ -1,0 +1,11 @@
+[Unit]
+Description=auto set modbus hold register value (bashscript) Daemon.
+After=network.target
+Requires=bashscript-modbus-salve.service
+
+[Service]
+Type=simple
+ExecStart=/home/tangyong/test/xc-gzcl-wlwgl-assist-env/setmodbusval.sh
+
+[Install]
+WantedBy=multi-user.target
