@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+  cassandra_data_trans:
+    image: cassandra:3.11.4
+    container_name: cassandra_data_trans
+#    restart: always
+    ports:
+      - 9042:9042
+      - 7000:7000
+    environment:
+      # docker多机模式部署时，集群间通信发布的ip（设置为宿主机的ip），不设置的话会获取到docker中的内部ip，不能跨机通信
+      CASSANDRA_BROADCAST_ADDRESS: 192.168.205.144
+      CASSANDRA_CLUSTER_NAME: "iot_cluster"
+      CASSANDRA_SEEDS: "192.168.205.144,192.168.205.145,192.168.205.146"
+    volumes:
+      - cassandradata:/var/lib/cassandra
+volumes:
+  cassandradata:

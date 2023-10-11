@@ -1,0 +1,34 @@
+package com.github.mnogu.gatling.mqtt.test
+
+import com.github.mnogu.gatling.mqtt.Predef._
+import io.gatling.core.Predef._
+import org.fusesource.mqtt.client.QoS
+
+import scala.concurrent.duration._
+
+class MqttSimulation extends Simulation {
+  val hpath = sys.env("GATLING_HOME")
+  val  feeder = csv(hpath + "/user-files/corep.csv").circular
+  val mqttConf = mqtt.host("tcp://192.168.1.225:21883").userName("${dtoken}")
+  val connect = exec(mqtt("connect")
+    .connect())
+
+  val publish = repeat(600) {
+    exec(mqtt("publish")
+      .publish("v1/devices/me/telemetry", "{\"opcpi060\":\"1\",\"opcpi061\":\"2\",\"opcpi062\":\"3\",\"opcpi063\":\"4\",\"opcpi064\":\"5\",\"opcpi065\":\"6\",\"opcpi066\":\"7\",\"opcpi067\":\"8\",\"opcpi068\":\"9\",\"opcpi069\":\"10\"}", QoS.AT_LEAST_ONCE, retain = false))
+      .pause(1000 milliseconds)
+  }
+
+  val disconnect = exec(mqtt("disconnect")
+    .disconnect())
+
+  val scn = scenario("MQTT Test")
+    .feed(feeder)
+    .exec(connect, publish, disconnect)
+  
+
+  setUp(
+    scn
+      .inject(rampUsers(2000) during (30 seconds))
+  ).protocols(mqttConf)
+}

@@ -1,0 +1,11 @@
+[Unit]
+Description=http server (nodejs) Daemon.
+After=network.target
+ConditionPathExists=/home/ty/node_http_server_root
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/http-server /home/ty/node_http_server_root
+
+[Install]
+WantedBy=multi-user.target

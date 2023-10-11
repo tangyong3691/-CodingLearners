@@ -1,0 +1,15 @@
+version: '3.0'
+
+services:
+  iotstat-redis:
+    image: redis:7.0.4
+    container_name: iotstat_redis
+    hostname: iotstat-redis
+    restart: always
+    volumes:
+      - stat:/data
+    command: redis-server
+    ports:
+      - 26379:6379
+volumes:
+  stat:

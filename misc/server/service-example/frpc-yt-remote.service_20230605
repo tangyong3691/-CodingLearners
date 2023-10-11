@@ -1,0 +1,14 @@
+[Unit]
+Description=frpc remote proxy for ssh Daemon.
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Restart=on-failure
+RestartSec=20s
+ExecStart=/home/tangyong/soft/frp_0.49.0_linux_amd64_yt/frpc -c /home/tangyong/soft/frp_0.49.0_linux_amd64_yt/frpc.ini 
+ExecReload=/home/tangyong/soft/frp_0.49.0_linux_amd64_yt/frpc -c /home/tangyong/soft/frp_0.49.0_linux_amd64_yt/frpc.ini
+
+[Install]
+WantedBy=multi-user.target

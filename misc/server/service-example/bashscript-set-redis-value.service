@@ -1,0 +1,11 @@
+[Unit]
+Description=auto set redis value (bashscript) Daemon.
+After=network.target
+Requires=redis.service
+
+[Service]
+Type=simple
+ExecStart=/root/test2022/setredisval.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,261 @@
+#user  nobody;
+worker_processes  1;
+
+#error_log  logs/error.log  info;
+#pid        logs/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+    #gzip  on;
+
+    #system monitor port
+    #upstream netmon {
+    #    server 127.0.0.1:19999;
+    #    keepalive 64;	
+    #}
+    
+    client_max_body_size 500m;
+
+    #filesvr upload port
+    upstream uploadsvr {
+        server 127.0.0.1:8266;
+        keepalive 64;
+    }
+
+    #iiot server
+    upstream tomcatserver{
+        server 127.0.0.1:8132;
+    }
+
+    upstream dashttserver{
+        server 127.0.0.1:9999;
+    }
+
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        #charset koi8-r;
+
+        #access_log  logs/host.access.log  main;
+
+        #location / {
+        #    root   html;
+        #    index  index.html index.htm;
+        #}
+
+        #iiot server api
+	location / {
+            proxy_pass http://tomcatserver/;
+            # proxy_pass http://dashttserver/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_redirect off;    	 
+          }
+
+
+       #test for revert proxy for python dash web
+        location ^~  /_dash {
+           proxy_pass http://dashttserver;
+        }
+
+       #test for revert proxy for python dash web
+        location ^~  /assets {
+           proxy_pass http://dashttserver;
+        }
+
+       #test for revert proxy for python dash web
+       location /dashkkabc {
+            proxy_set_header Accept-Encoding "";
+            # rewrite ^/abc(.*) /$1 break;
+            proxy_pass http://dashttserver/;
+            # proxy_http_version 1.1;
+            # proxy_set_header Upgrade $http_upgrade;
+            # proxy_set_header Connection "upgrade";
+            # proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            # proxy_set_header X-Original-Host $http_host;
+            # proxy_set_header X-Original-Scheme $scheme;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+            sub_filter_types *;
+            sub_filter_once off;
+            sub_filter 'href="/assets' 'href="/dashkkabc/assets';
+            sub_filter 'src="/assets' 'src="/dashkkabc/assets';
+            sub_filter 'src="/_dash' 'src="/dashkkabc/_dash';
+            sub_filter 'href="/_dash' 'href="/dashkkabc/_dash';
+            # sub_filter .dashttserver $server_addr/kkabc/;
+            # proxy_redirect / /abc/;
+            # proxy_redirect off;
+            
+        }
+ 
+        location /api/ {
+            proxy_pass http://tomcatserver/api/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_redirect off;
+        }
+        location /api/admin/ {
+            proxy_pass http://tomcatserver/api/admin/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_redirect off;
+        }
+        location /api/beidouapp/ {
+            proxy_pass http://tomcatserver/api/beidouapp/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_redirect off;
+        }
+
+        #file download api
+        # location ~/group[0-9]/M00 {
+        #    add_header 'Access-Control-Allow-Origin' '*';
+        #   ngx_fastdfs_module;
+        #  }
+
+        #file upload api
+        location /api/file/ {
+            proxy_redirect off;
+            proxy_set_header Host $host:$server_port;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_pass http://uploadsvr/api/file/;
+        }
+
+        #system monitor
+        #location = /sm {
+        #    return 301 /sm/;
+        #}
+
+        #location ~ /sm/(?<ndpath>.*) {
+        #    proxy_redirect off;
+        #    proxy_set_header Host $host;
+
+        #    proxy_set_header X-Forwarded-Host $host;
+        #    proxy_set_header X-Forwarded-Server $host;
+        #    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        #    proxy_http_version 1.1;
+        #    proxy_pass_request_headers on;
+        #    proxy_set_header Connection "keep-alive";
+        #    proxy_store off;
+        #    proxy_pass http://netmon/$ndpath$is_args$args;
+
+        #    gzip on;
+        #    gzip_proxied any;
+        #    gzip_types *;
+        #}
+
+        #filesvr upload
+        location = /fu {
+            return 301 /fu/;
+        }
+
+        location ~ /fu/(?<ndpath>.*) {
+            proxy_pass http://uploadsvr/$ndpath$is_args$args;
+            proxy_redirect off;
+            proxy_set_header Host $host:$server_port;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header REMOTE-HOST $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        } 
+
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+        # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+        #
+        #location ~ \.php$ {
+        #    proxy_pass   http://127.0.0.1;
+        #}
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        #location ~ \.php$ {
+        #    root           html;
+        #    fastcgi_pass   127.0.0.1:9000;
+        #    fastcgi_index  index.php;
+        #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        #    include        fastcgi_params;
+        #}
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        #location ~ /\.ht {
+        #    deny  all;
+        #}
+    }
+
+
+    # another virtual host using mix of IP-, name-, and port-based configuration
+    #
+    #server {
+    #    listen       8000;
+    #    listen       somename:8080;
+    #    server_name  somename  alias  another.alias;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+
+    # HTTPS server
+    #
+    #server {
+    #    listen       443 ssl;
+    #    server_name  localhost;
+
+    #    ssl_certificate      cert.pem;
+    #    ssl_certificate_key  cert.key;
+
+    #    ssl_session_cache    shared:SSL:1m;
+    #    ssl_session_timeout  5m;
+
+    #    ssl_ciphers  HIGH:!aNULL:!MD5;
+    #    ssl_prefer_server_ciphers  on;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+}

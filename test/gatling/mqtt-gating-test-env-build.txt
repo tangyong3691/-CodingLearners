@@ -1,0 +1,24 @@
+1. 编译mqtt jar包 (源码 gatling-mqtt-master)
+  sudo apt-get remove scala-library scala
+  sudo dpkg -i scala-2.11.8.deb
+  解压sbt-0.13.18.tgz (设置PATH)
+  sbt assembly
+  进入目录gatling-mqtt-master
+  sbt assembly
+2. 建立gatling测试用例
+   进入gatling-charts-highcharts-bundle-2.2.3
+   拷贝gatling-mqtt-assembly-0.1.0-SNAPSHOT.jar 到lib/
+   cp MqttSimulation.scala user-files/simulations/
+   cp cdm.csv user-files/
+   设置JAVA_HOME(ORACE JDK8), 设置PATH
+   设置GATLING_HOME
+   bin/gatling.sh
+
+
+
+mqtt性能测试(thingsboard测试mqtt性能)(mqtt test of performance)
+https://thingsboard.io/docs/reference/performance-tools/
+
+https://github.com/thingsboard/gatling-mqtt
+
+https://juniarto-samsudin.medium.com/thingsboard-mqtt-load-test-with-gatling-773512a74992

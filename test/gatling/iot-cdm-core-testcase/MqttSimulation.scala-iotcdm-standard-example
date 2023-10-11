@@ -1,0 +1,34 @@
+package com.github.mnogu.gatling.mqtt.test
+
+import com.github.mnogu.gatling.mqtt.Predef._
+import io.gatling.core.Predef._
+import org.fusesource.mqtt.client.QoS
+
+import scala.concurrent.duration._
+
+class MqttSimulation extends Simulation {
+  val mqttConf = mqtt.host("tcp://192.168.1.231:41883")
+  val hpath = sys.env("GATLING_HOME")
+  val  feeder = csv(hpath + "/user-files/cdmp.csv").circular
+  val connect = exec(mqtt("connect")
+    .connect())
+
+  val publish = repeat(100) {
+    feed(feeder)
+    .exec(mqtt("publish")
+      .publish("adapter/gw_1676606205_5540/opc/7", "{\"host\":\"127.0.0.1\",\"tag\":\"${tname}\",\"value\":${tvalue}}", QoS.AT_LEAST_ONCE, retain = false))
+      .pause(1000 milliseconds)
+  }
+
+  val disconnect = exec(mqtt("disconnect")
+    .disconnect())
+
+  val scn = scenario("MQTT Test").during(600){
+    exec(connect, publish, disconnect)
+  }
+
+  setUp(
+    scn
+      .inject(rampUsers(1000) over (1 seconds))
+  ).protocols(mqttConf)
+}

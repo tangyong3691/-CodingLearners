@@ -1,0 +1,17 @@
+version: '3.0'
+
+services:
+  emqxt:
+    image: emqx/emqx:4.3.10
+    container_name: test_emqxt
+    ports:
+      - 18083:18083
+      - 1883:1883
+      - 8081:8081
+      - 8883:8883
+    volumes:
+      - logs:/opt/emqx/log
+      - /etc/localtime:/etc/localtime
+    restart: always
+volumes:
+  logs:
