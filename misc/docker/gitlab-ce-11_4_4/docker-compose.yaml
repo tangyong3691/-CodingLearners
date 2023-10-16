@@ -1,0 +1,16 @@
+version: '3.7'
+services:
+  web:
+    image: 'gitlab11-4-4'
+    restart: always
+    build: .
+    hostname: 'localhost'
+    container_name: gitlab-ce11-4-4
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost'
+    ports:
+      - '51001:51001'
+      - '9080:80'
+      - '9443:443'
+

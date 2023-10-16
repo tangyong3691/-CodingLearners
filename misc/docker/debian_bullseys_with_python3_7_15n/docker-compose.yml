@@ -1,0 +1,20 @@
+# WARNING: this file is not suitable for production, please use with caution
+version: '3'
+
+services:
+  web:
+    image: debian_bullseye_plus_python3_7_testexample
+    build: .
+    command: flask run -h 0.0.0.0
+    user: root
+#    command: python3.7 tcp_server_examp.py
+    env_file:
+      - ./.flaskenv
+    environment:
+      - DATABASE_URI=sqlite:////db/ttapp.db
+    volumes:
+      - ./ytestapp:/code/ytest
+      - ./ttapp:/code/ttapp
+      - ./db/:/db/
+    ports:
+      - "5999:5000"

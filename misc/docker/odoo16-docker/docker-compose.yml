@@ -1,0 +1,14 @@
+version: '3.7'
+services:
+  odoo16communitytest:
+    build: ./
+    image: beidouapp/odoo-community-t
+    container_name: odoo16c
+    restart: always    
+    # Ports (Required for REST connector)
+    #network_mode: "host"
+    ports:
+      - 18069:8069
+    volumes:
+      - ./odoo-16.0.post20221115:/usr/src/app/odoo-16.0.post20221115
+      - ./odoo-data-temp:/usr/src/app/odoo16t-data

@@ -1,0 +1,24 @@
+FROM debian:stretch
+WORKDIR /
+COPY sources.list /etc/apt/
+RUN apt clean 
+RUN apt update 
+RUN DEBIAN_FRONTEND=noninteractive apt upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+RUN apt install -y curl openssh-server ca-certificates
+
+RUN mkdir /gitlabdeb
+WORKDIR /gitlabdeb
+COPY gitlab-ce_11.4.4-ce.0_amd64.deb .
+##RUN EXTERNAL_URL="http://192.168.1.231" apt install -y ./gitlab-ce_11.4.4-ce.0_amd64.deb
+
+RUN apt install -y build-essential python python-dev python-setuptools
+#RUN easy_install pip
+#RUN apt install -y python-pip
+RUN apt install -y python3
+RUN apt install -y python3-pip
+#RUN pip3 install uwsgi flask
+EXPOSE 51001
+
+#cmd ["python3", "server.py"]
+cmd ["python3","-m", "http.server", "51001"]
+

@@ -1,0 +1,27 @@
+FROM ubuntu:22.04
+RUN mkdir /usr/src/app
+WORKDIR /usr/src/app
+COPY ./debian-depend .
+COPY ./odoo-init.conf .
+COPY ./odoo-16.0.post20221115/requirements.txt .
+COPY ./wkhtmltox_0.12.6.1-2.jammy_amd64.deb .
+COPY odoo-16.0.post20221115 .
+SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt upgrade 
+RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
+RUN apt -y install git wget nodejs npm python3 build-essential libzip-dev python3-dev libxslt1-dev python3-pip \
+                libldap2-dev python3-wheel libsasl2-dev python3-venv python3-setuptools node-less libjpeg-dev \
+                 xfonts-75dpi xfonts-base libpq-dev libffi-dev fontconfig
+RUN npm config set registry https://mirrors.huaweicloud.com/repository/npm/ && npm install -g rtlcss
+RUN dpkg -i wkhtmltox_0.12.6.1-2.jammy_amd64.deb
+
+RUN sed -n -e '/^Depends:/,/^Pre/ s/ python3-\(.*\),/python3-\1/p' debian-depend | xargs apt-get install -y
+RUN pip3 install wheel
+#RUN pip3 install  -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/ 
+#WORKDIR /usr/src/app/odoo-16.0.post20221115
+#RUN pip3 install wheel
+#RUN pip install  -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
+
+#CMD python3 odoo-bin -c ../odoo-init.conf --load-language=zh_CN
+CMD ["bash"]

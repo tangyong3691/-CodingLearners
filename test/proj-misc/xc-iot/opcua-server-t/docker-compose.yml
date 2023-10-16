@@ -1,0 +1,11 @@
+version: '3.7'
+services:
+  opcuasrvt:
+    build: ./
+    image: opcua-server-smt
+    container_name: opcua-srv-t
+    restart: always    
+    # Ports (Required for REST connector)
+    network_mode: "host"
+    environment:
+      - OPCUA_SERVER_IP=192.168.1.202
