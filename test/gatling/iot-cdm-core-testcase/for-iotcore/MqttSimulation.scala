@@ -29,6 +29,6 @@ class MqttSimulation extends Simulation {
 
   setUp(
     scn
-      .inject(rampUsers(999) over (3 seconds))
+      .inject(rampUsers(200) during (2 seconds))
   ).protocols(mqttConf)
 }
