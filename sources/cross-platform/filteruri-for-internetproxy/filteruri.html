@@ -1,0 +1,27 @@
+<html>
+<body>
+<table width="640"><tbody>
+<tr>
+<th>输入</th>
+<th>去重结果</th>
+</tr>
+<tr>
+<th>
+    <textarea id="myTextarea" rows="10" cols="64" 
+        placeholder="请输入内容，每行一个链接" onkeyup="filterAndDeduplicateLinks()"></textarea>
+</th>
+
+<th>
+ <textarea id="outputTextarea" rows="10" cols="64" readonly></textarea>
+    
+</th>
+</tr>
+</tbody></table>
+<div>
+    <button disabled onclick="filterAndDeduplicateLinks()">筛选并去重</button>
+    <label>筛选条件: us server, port 443, only ip, type vmess vless trojan</label>
+</div>
+<script src="./base64.js"></script>
+<script src="./filterdeduplicate.js"></script>
+</body>
+</html>
