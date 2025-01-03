@@ -23,8 +23,10 @@ function filterAndDeduplicateLinks() {
 		console.log(line);
         const trimmedLine = line.trim();
 		if (trimmedLine.startsWith('vless://') || trimmedLine.startsWith('trojan://') || trimmedLine.startsWith('ss://')) {
-        return ( 
-		(trimmedLine.includes('%e7%be%8e%e5%9b%bd') || trimmedLine.includes('%E7%BE%8E%E5%9B%BD') || trimmedLine.includes('#US_')|| trimmedLine.includes('_US_') || trimmedLine.includes('%7cUS_') ) && (trimmedLine.includes(':443?') || trimmedLine.includes(':443#')));
+			var aliastail = null;
+		   if (trimmedLine.startsWith('vless://')) aliastail = trimmedLine.slice(-3).toUpperCase();
+           return ( 
+		    (trimmedLine.includes('%e7%be%8e%e5%9b%bd') || trimmedLine.includes('%E7%BE%8E%E5%9B%BD') || trimmedLine.includes('#US_')|| trimmedLine.includes('_US_') || trimmedLine.includes('%7cUS_') || aliastail == '#US' ) && (trimmedLine.includes(':443?') || trimmedLine.includes(':443#')));
 		} 
 		else if (trimmedLine.startsWith('vmess://'))
 		{
@@ -50,7 +52,10 @@ function filterAndDeduplicateLinks() {
         // 提取@...?模式的文本
 		if(link.startsWith('vless://') || link.startsWith('trojan://') || link.startsWith('ss://')) {
         var match = link.match(/@([^?]+)\?/);
-		if(link.startsWith('ss://')) match = link.match(/@([^?]+)\#/);
+		if(link.startsWith('ss://')) { 
+		    match = link.match(/@([^?]+)\#/); 
+			if(link.substring(0, 15) == 'ss://cmM0LW1kNT') match = null;
+		}
         if (match) {
             const pattern = match[1]; // 获取@和?之间的文本
 			
