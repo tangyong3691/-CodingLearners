@@ -26,7 +26,7 @@ function filterAndDeduplicateLinks() {
 			var aliastail = null;
 		   if (trimmedLine.startsWith('vless://')) aliastail = trimmedLine.slice(-3).toUpperCase();
            return ( 
-		    (trimmedLine.includes('%e7%be%8e%e5%9b%bd') || trimmedLine.includes('%E7%BE%8E%E5%9B%BD') || trimmedLine.includes('#US_')|| trimmedLine.includes('_US_') || trimmedLine.includes('%7cUS_') || aliastail == '#US' ) && (trimmedLine.includes(':443?') || trimmedLine.includes(':443#')));
+		    (trimmedLine.includes('%e7%be%8e%e5%9b%bd') || trimmedLine.includes('%E7%BE%8E%E5%9B%BD') || trimmedLine.includes('#US_')|| trimmedLine.includes('_US_') || trimmedLine.includes('%7cUS_') || trimmedLine.includes('%F0%9F%87%BA%F0%9F%87%B8') || aliastail == '#US' ) && (trimmedLine.includes(':443?') || trimmedLine.includes(':443#')));
 		} 
 		else if (trimmedLine.startsWith('vmess://'))
 		{
@@ -37,7 +37,7 @@ function filterAndDeduplicateLinks() {
 		   const regexipport = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(?:[1-9][0-9]{0,4})$/;
 		   const regexip = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
            if (	dejson.hasOwnProperty('add') && dejson.hasOwnProperty('ps')	&& dejson.hasOwnProperty('port') ) {
-		       if ( (dejson.ps.includes('US_') || dejson.ps.includes('美国') )&& dejson.port == 443 && regexip.test(dejson.add)) return true;
+		       if ( (dejson.ps.includes('US_') || dejson.ps.includes('美国') || dejson.ps.includes('\uD83C\uDDFA\uD83C\uDDF8') )&& dejson.port == 443 && regexip.test(dejson.add)) return true;
 		   }
 		   return false;
 		   
