@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- $Id: base64.html,v 1.1 2009/03/01 22:00:28 dankogai Exp dankogai $ -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Demo for base64.js</title>
+</head>
+<body>
+<h1>Demo for base64.js</h1>
+<h3>filter protocol ws site, us checked when on</h3>
+<p>$Id: base64.html,v 1.1 2009/03/01 22:00:28 dankogai Exp dankogai $</p>
+<div >
+                <input type="checkbox" id="option1usfilter" onchange="handleOptionChange(this)">
+                <label for="option1">us</label>
+</div>
+<div >
+                <input type="checkbox" id="option2wsfilter" onchange="handleOptionChange(this)">
+                <label for="option2">ws</label>
+</div>
+<div >
+                <input type="checkbox" id="option3portfilter" onchange="handleOptionChange(this)">
+                <label for="option3">port</label>
+</div>
+<table width="640"><tbody>
+<tr><th width="50%">Text</th><th>Base64
+(URL Safe <input id="encodeURI" type="checkbox" onclick="doit()">)</th></tr>
+<tr>
+<th><textarea id="srctxt" cols="32" rows="4" onkeyup="
+     doit();
+	 filterAndDeduplicateLinks();
+">
+</textarea></th>
+<th><textarea id="base64" cols="32" rows="4" onkeyup="
+    $('srctxt').value = Base64.decode(this.value);
+    doit();
+    if (1 /*@cc_on -1 @*/) $('data').src = 'data:text/plain;base64,' + this.value;
+	filterAndDeduplicateLinks();
+"></textarea></th>
+</tr>
+<tr><th width="50%">Roundtrip</th><th>iframe w/ data: (no IE)</th></tr>
+<tr>
+<th><textarea id="roundtrip" cols="32" rows="4" disabled></textarea></th>
+<th><iframe id="data" width="80%" height="64"></iframe></th>
+</tr>
+<tr>
+<th>
+<textarea id="outputfiltered" rows="10" cols="32" readonly></textarea>
+</th>
+</tr>
+</tbody></table>
+
+
+<script src="./base64.js"></script>
+<script>
+$ = function(id){ return document.getElementById(id) };
+function doit(){
+    var encoded = Base64[ 
+        'encode' + ($('encodeURI').checked ? 'URI' : '')
+     ]($('srctxt').value);
+    $('base64').value = encoded;
+    if (1 /*@cc_on -1 @*/) {
+        $('data').src = 'data:text/plain;base64,' 
+            + Base64.encode(Base64.decode(encoded));
+    }
+    $('roundtrip').value = Base64.decode(encoded);
+}
+
+function testlog(v) {
+    console.log(v);
+}
+
+function handleOptionChange(checkbox) {
+            const optionId = checkbox.id;
+            const isChecked = checkbox.checked;
+	  doit();
+	 filterAndDeduplicateLinks();	
+}
+
+function filterAndDeduplicateLinks() {
+   var usfilterenable = document.getElementById("option1usfilter").checked;
+   var wsfilterenable = document.getElementById("option2wsfilter").checked;
+   var portfilterenable = document.getElementById("option3portfilter").checked;
+    // 获取输入和输出的textarea元素
+    const inputTextarea = document.getElementById('srctxt');
+    const outputTextarea = document.getElementById('outputfiltered');
+    
+    // 获取文本内容并按行分割
+    const lines = inputTextarea.value.split('\n');
+    
+    // 用于存储已经出现的@...?模式文本
+    const seenPatterns = new Set();
+    // 用于存储不重复的结果
+    const uniqueResults = [];
+    
+    // 首先筛选vass://或fass://开头的行
+    const filteredLinks = lines.filter(line => {
+		console.log(line);
+        const trimmedLine = line.trim();
+		if (trimmedLine.startsWith('vless://')  || trimmedLine.startsWith('trojan://') || trimmedLine.startsWith('ss://') ) {
+		   var aliastail = null;
+		   if (trimmedLine.startsWith('vless://')) aliastail = trimmedLine.slice(-3).toUpperCase();
+		   
+           return ( 
+		   ((!usfilterenable) || trimmedLine.includes('%e7%be%8e%e5%9b%bd') || trimmedLine.includes('%E7%BE%8E%E5%9B%BD') 
+		     || trimmedLine.includes('%e7%be%8e%e5%9c%8b') || trimmedLine.includes('%E7%BE%8E%E5%9C%8B')
+			 || trimmedLine.includes('#US_') || trimmedLine.includes('_US_') || trimmedLine.includes('%7cUS_') || trimmedLine.includes('%F0%9F%87%BA%F0%9F%87%B8') || aliastail == '#US'  )
+		   && ((!wsfilterenable) ||((trimmedLine.startsWith('vless://') || trimmedLine.startsWith('trojan://')) && (trimmedLine.includes('&type=ws') || trimmedLine.includes('?type=ws')) ))
+		   &&((!portfilterenable) || (trimmedLine.includes(':443?') || trimmedLine.includes(':443#')))
+		   );
+		} 
+		else if (trimmedLine.startsWith('vmess://'))
+		{
+		   testlog(trimmedLine);
+		   const vmessdestr = Base64.decode(trimmedLine.slice(8));
+		   if (!vmessdestr) return false;
+           const dejson = JSON.parse(vmessdestr);
+		   testlog(dejson);
+		   const regexipport = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(?:[1-9][0-9]{0,4})$/;
+		   const regexip = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+           if (	dejson.hasOwnProperty('add') && dejson.hasOwnProperty('ps')	&& dejson.hasOwnProperty('net') && dejson.hasOwnProperty('port') ) {
+		       if ( ((!usfilterenable) || dejson.ps.includes('US_') || dejson.ps.includes('美国') || dejson.ps.includes('\uD83C\uDDFA\uD83C\uDDF8') ) 
+			   && ((!wsfilterenable) || dejson.net.includes('ws'))
+			   && regexip.test(dejson.add)
+			   && ((!portfilterenable) || dejson.port == 443)
+			   ) return true;
+		   }
+		   return false;
+		   
+		}
+		else {
+		  return false;
+		}
+    });
+    
+    // 进一步处理筛选出的行
+    filteredLinks.forEach(link => {
+        // 提取@...?模式的文本
+		if(link.startsWith('vless://') || link.startsWith('trojan://') || link.startsWith('ss://')) {
+        var match = link.match(/@([^?]+)\?/);
+		if(link.startsWith('ss://')) { 
+		   match = link.match(/@([^?]+)\#/); 
+		   if(link.substring(0, 15) == 'ss://cmM0LW1kNT') match = null;
+		}
+        if (match) {
+            const pattern = match[1]; // 获取@和?之间的文本
+			
+            const regexipport = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(?:[1-9][0-9]{0,4})$/;
+            // 如果这个模式之前没有出现过，就添加到结果中
+			
+            if ( regexipport.test(pattern) && !seenPatterns.has(pattern)) {
+                seenPatterns.add(pattern);
+                uniqueResults.push(link);
+            }
+        } else {
+            // 如果链接中没有@...?模式，直接添加到结果中
+            //uniqueResults.push(link);
+        }
+		}
+		else {
+		   const dejson = JSON.parse(Base64.decode(link.slice(8)));
+		   const lkurl= dejson.add + dejson.port;
+		   if (  !seenPatterns.has(lkurl)) {
+                seenPatterns.add(lkurl);
+                uniqueResults.push(link);
+            }
+		   
+		
+		}
+    });
+    
+    // 将结果写入输出textarea
+    outputTextarea.value = uniqueResults.join('\n');
+}
+</script>
+</body>
+</html>
